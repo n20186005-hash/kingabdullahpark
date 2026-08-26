@@ -1,0 +1,266 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const mapUrl = 'https://maps.app.goo.gl/L6o5sanex7PaQN7D8';
+const faq = [
+  { q: 'هل دخول منتزه الملك عبدالله مجاني؟', a: 'قد تتغير رسوم الدخول وآلية الدخول بحسب الموسم والفعاليات. تظهر في بعض المصادر العامة الحديثة رسوم رمزية، لكنها ليست سعراً رسمياً ثابتاً؛ لذلك يُفضّل التحقق من القنوات الرسمية أو بيانات الموقع قبل التوجه.' },
+  { q: 'ما أفضل وقت لزيارة المنتزه؟', a: 'من أكتوبر إلى أبريل تكون الأجواء ألطف عادةً، وفي الأيام الحارة تكون الساعات التي تلي الغروب أكثر راحة. عروض النافورة والفعاليات ليست مضمونة يومياً وقد تتغير مواعيدها.' },
+  { q: 'كم تستغرق الزيارة؟', a: 'زيارة هادئة للممرات والبحيرة ومناطق الجلوس تستغرق عادةً من ساعتين إلى أربع ساعات. أضف وقتاً إضافياً عند وجود فعالية أو عند اصطحاب الأطفال.' },
+  { q: 'هل توجد مواقف سيارات؟', a: 'تشير بيانات إنشاء المنتزه إلى توفير أكثر من ألف موقف، لكن الإشغال الفعلي يتغير بشدة في عطلات نهاية الأسبوع والفعاليات. الوصول مبكراً أو استخدام النقل العام يقلل ضغط البحث عن موقف.' },
+  { q: 'هل توجد دورات مياه ومرافق للعائلات؟', a: 'تتضمن مخططات ومعلومات المنتزه دورات مياه موزعة، ومناطق لعب، ومقاعد مظللة، ومصليات للرجال والنساء. قد تُغلق بعض المرافق مؤقتاً للصيانة.' },
+  { q: 'كيف أصل من مطار الملك خالد الدولي؟', a: 'يمكن استخدام سيارة أجرة مرخصة أو خدمة نقل مرخصة مباشرة. كما يمكن دخول شبكة مترو الرياض عبر مسار المطار ثم التبديل داخل الشبكة باتجاه المسار البرتقالي ومنطقة الملز؛ راجع تطبيق النقل الرسمي قبل الرحلة لأن مسار التبديل والتشغيل قد يتغير.' },
+  { q: 'هل النافورة تعمل كل ليلة؟', a: 'النافورة من أشهر عناصر المنتزه، لكن التشغيل والعروض قد تتأثر بالصيانة والطقس والفعاليات والمواسم. لا ننصح ببناء الزيارة على موعد عرض غير منشور رسمياً في يوم الزيارة.' },
+];
+
+const attractionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['TouristAttraction', 'Park'],
+  name: 'منتزه الملك عبدالله',
+  alternateName: 'King Abdullah Park',
+  description: 'دليل مستقل وغير ربحي لمنتزه الملك عبدالله في حي الملز بمدينة الرياض.',
+  inLanguage: 'ar-SA',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'شارع الأمين عبدالله العلي النعيم، حي الملز',
+    addressLocality: 'الرياض',
+    postalCode: '12836',
+    addressRegion: 'منطقة الرياض',
+    addressCountry: 'SA',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 24.66636567805645,
+    longitude: 46.734584477163054,
+  },
+  openingHours: [
+    'Su 13:00-23:59',
+    'Mo 13:00-23:59',
+    'Tu 13:00-23:59',
+    'We 13:00-23:59',
+    'Th 13:00-23:59',
+    'Fr 13:00-23:59',
+    'Sa 13:00-23:59',
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: 4.3,
+    reviewCount: 44110,
+    bestRating: 5,
+  },
+  ...(Astro.site ? { url: new URL('/', Astro.site).href } : {}),
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+
+const imageEntrance = 'https://upload.wikimedia.org/wikipedia/commons/b/b6/King_Abdullah_Park_Riyadh_entrance.jpg';
+const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdullah_Park_Riyadh_lake.jpg';
+---
+<BaseLayout
+  title="منتزه الملك عبدالله بالرياض | دليل مستقل للزيارة"
+  description="دليل عربي مستقل وغير ربحي لمنتزه الملك عبدالله في الملز: التاريخ، النافورة، الوصول، المواقف، الخدمات، أوقات الزيارة والأسئلة الشائعة."
+  jsonLd={[attractionJsonLd, faqJsonLd]}
+>
+  <section class="relative overflow-hidden bg-[#071713] text-white">
+    <div class="absolute inset-0 opacity-55">
+      <img src={imageLake} alt="البحيرة في منتزه الملك عبدالله ليلاً" class="h-full w-full object-cover" loading="eager" fetchpriority="high" referrerpolicy="no-referrer" />
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,20,15,.96)_0%,rgba(5,20,15,.72)_45%,rgba(5,20,15,.25)_100%)]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(5,20,15,.82)_0%,transparent_45%)]"></div>
+    </div>
+    <div class="shell relative grid min-h-[76vh] items-end gap-10 py-16 lg:grid-cols-[1.1fr_.7fr] lg:py-24">
+      <div class="max-w-3xl pb-6">
+        <p class="mb-5 inline-flex rounded-full border border-white/20 bg-white/8 px-4 py-2 text-xs font-bold tracking-wide text-[#d8ede5]">دليل مستقل · حي الملز · الرياض</p>
+        <h1 class="text-[clamp(3.4rem,9vw,7.6rem)] font-black leading-[.95] tracking-[-.055em]">قلبٌ أخضر<br/><span class="text-[#e5cda7]">يضيء ليل الرياض</span></h1>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-white/72">منتزه حضري واسع يجمع المسطحات الخضراء والبحيرة والنافورة الاستعراضية ومساحات العائلات في موقع ارتبط تاريخياً بميدان الملز للفروسية.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#visit" class="rounded-full bg-[#e5cda7] px-6 py-3 font-bold text-[#071713] hover:bg-white">خطط لزيارتك</a>
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">الاتجاهات على الخريطة</a>
+        </div>
+      </div>
+      <aside class="mb-6 rounded-[28px] border border-white/12 bg-black/24 p-6 backdrop-blur-md">
+        <p class="text-xs font-bold text-[#b6e2d3]">بطاقة سريعة</p>
+        <dl class="mt-4 grid grid-cols-2 gap-5 text-sm">
+          <div><dt class="text-white/45">التقييم</dt><dd class="mt-1 text-xl font-bold">4.3 / 5</dd><small class="text-white/45">44,110 مراجعة على الخرائط</small></div>
+          <div><dt class="text-white/45">الموقع</dt><dd class="mt-1 text-xl font-bold">الملز</dd><small class="text-white/45">الرياض 12836</small></div>
+          <div><dt class="text-white/45">مدة مناسبة</dt><dd class="mt-1 text-xl font-bold">2–4 ساعات</dd><small class="text-white/45">للزيارة الهادئة</small></div>
+          <div><dt class="text-white/45">طابع الزيارة</dt><dd class="mt-1 text-xl font-bold">عائلي</dd><small class="text-white/45">ومشي واستراحة</small></div>
+        </dl>
+        <p class="mt-5 border-t border-white/10 pt-4 text-xs leading-6 text-white/48">ساعات التشغيل والرسوم والعروض قابلة للتغيير؛ المعلومات العملية هنا إرشادية ويجب التحقق منها قبل الزيارة.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="story" class="section soft-grid">
+    <div class="shell grid items-center gap-12 lg:grid-cols-[.9fr_1.1fr]">
+      <div class="overflow-hidden rounded-[34px] border border-[#0b201a]/10 bg-[#0b201a] shadow-[var(--shadow)]">
+        <img src={imageEntrance} alt="مدخل منتزه الملك عبدالله في حي الملز ليلاً" class="aspect-[4/5] w-full object-cover" loading="lazy" referrerpolicy="no-referrer" />
+        <div class="p-5 text-xs leading-6 text-white/58">صورة توثيقية للمدخل. حقوق الصورة للمصور وفق ترخيص المصدر في ويكيميديا كومنز.</div>
+      </div>
+      <div>
+        <span class="kicker">حكاية المكان</span>
+        <h2 class="section-title">من ميدان الملز إلى متنفس حضري</h2>
+        <p class="lead">قبل أن يصبح الموقع منتزهاً عاماً، ارتبط المكان بميدان الملز وسباقات الخيل. ومع تحول الرياض وتوسعها، أعيدت صياغة المساحة لتصبح متنفساً أخضر كبيراً داخل نسيج المدينة، وافتتح المنتزه بصورته الحديثة في عام 2013.</p>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+          <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">318 ألف م²</strong><p class="mt-2 text-sm text-[#61716a]">مساحة منشورة في مواد المشروع والتغطيات الصحفية عند الافتتاح.</p></article>
+          <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">+110 م</strong><p class="mt-2 text-sm text-[#61716a]">ارتفاع مذكور للنافورة الرئيسية ضمن وصف المشروع الأصلي.</p></article>
+          <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">+13 ألف م²</strong><p class="mt-2 text-sm text-[#61716a]">مسطح البحيرة الرئيسية في بيانات إنشاء المنتزه.</p></article>
+          <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">2013</strong><p class="mt-2 text-sm text-[#61716a]">عام افتتاح المنتزه الحديث للجمهور.</p></article>
+        </div>
+        <div class="mt-7 rounded-2xl border-r-4 border-[#e5cda7] bg-[#f7f1e5] p-5 text-sm leading-7 text-[#4c584f]">
+          <strong class="text-[#071713]">ملاحظة منهجية:</strong> لا توجد رواية شعبية موثوقة مرتبطة بالموقع نستطيع تقديمها بوصفها «أسطورة». لذلك نعرض تاريخ المكان القابل للتتبع بدلاً من اختلاق قصة سياحية غير موثقة.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-[#0b201a] text-white">
+    <div class="shell">
+      <span class="kicker !text-[#b6e2d3]">لماذا يختلف المكان؟</span>
+      <h2 class="section-title max-w-4xl">حديقة تُقرأ على إيقاع الماء والضوء</h2>
+      <div class="mt-10 grid gap-px overflow-hidden rounded-[30px] bg-white/10 md:grid-cols-3">
+        <article class="bg-[#0b201a] p-8"><span class="text-4xl">≈</span><h3 class="mt-7 text-2xl font-bold">النافورة والبحيرة</h3><p class="mt-3 text-sm leading-7 text-white/58">العنصر البصري الأشهر في المنتزه، خاصة بعد حلول الظلام. العروض تخضع لجداول التشغيل والصيانة والفعاليات.</p></article>
+        <article class="bg-[#0b201a] p-8"><span class="text-4xl">↝</span><h3 class="mt-7 text-2xl font-bold">المشي والمساحات المفتوحة</h3><p class="mt-3 text-sm leading-7 text-white/58">مسارات ومسطحات خضراء ومناطق جلوس تمنح الزائر مساحة للحركة والاستراحة بعيداً عن إيقاع الشوارع المحيطة.</p></article>
+        <article class="bg-[#0b201a] p-8"><span class="text-4xl">✦</span><h3 class="mt-7 text-2xl font-bold">العائلة والفعاليات</h3><p class="mt-3 text-sm leading-7 text-white/58">مناطق لعب ومدرجات وساحة للفعاليات تجعل تجربة المنتزه قابلة للتغير من يوم عادي هادئ إلى ليلة أكثر ازدحاماً.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="visit" class="section bg-[#fffdf7]">
+    <div class="shell">
+      <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div><span class="kicker">خطط للزيارة</span><h2 class="section-title">المعلومة التي تحتاجها قبل أن تخرج</h2></div>
+        <p class="max-w-lg text-sm leading-7 text-[#61716a]">هذه الصفحة لا تدّعي أن الجداول التشغيلية ثابتة. عند وجود تعارض بين هذا الدليل وإعلان رسمي حديث، اتبع الإعلان الرسمي.</p>
+      </div>
+      <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <article class="card p-7"><p class="text-xs font-bold text-[#1d6b56]">ساعات شائعة منشورة</p><h3 class="mt-3 text-xl font-bold">13:00 – منتصف الليل</h3><p class="mt-3 text-sm text-[#61716a]">تُظهر بيانات ملاحة حديثة ساعات شائعة من 13:00 حتى منتصف الليل يومياً، بينما تختلف بعض الأدلة العامة في الساعات. تحقّق في يوم الزيارة، خاصة في المواسم والفعاليات.</p></article>
+        <article class="card p-7"><p class="text-xs font-bold text-[#1d6b56]">التذاكر / الرسوم</p><h3 class="mt-3 text-xl font-bold">قد تُطبق رسوم رمزية</h3><p class="mt-3 text-sm text-[#61716a]">لا نثبت رقماً دائماً لعدم وجود تسعيرة رسمية مستقرة منشورة يمكن ضمانها. قد تختلف رسوم الدخول والفعاليات.</p></article>
+        <article class="card p-7"><p class="text-xs font-bold text-[#1d6b56]">أفضل فترة</p><h3 class="mt-3 text-xl font-bold">أكتوبر – أبريل</h3><p class="mt-3 text-sm text-[#61716a]">الأشهر الألطف مناخاً مناسبة للمشي. صيفاً، يفضّل ما بعد الغروب مع الماء والقبعة والملابس الخفيفة.</p></article>
+        <article class="card p-7"><p class="text-xs font-bold text-[#1d6b56]">مدة مقترحة</p><h3 class="mt-3 text-xl font-bold">ساعتان إلى أربع</h3><p class="mt-3 text-sm text-[#61716a]">تكفي لجولة ومساحة لعب واستراحة. زِد المدة إذا كان هدفك حضور فعالية أو انتظار عرض مائي.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="transport" class="section bg-[#f7f1e5]">
+    <div class="shell grid gap-12 lg:grid-cols-[.75fr_1.25fr]">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <span class="kicker">الوصول بالتفصيل</span>
+        <h2 class="section-title">إلى الملز بدون تخمين</h2>
+        <p class="lead">العنوان: شارع الأمين عبدالله العلي النعيم، حي الملز، الرياض 12836. اختر وسيلة الوصول بحسب الوقت والحرارة ووجود الفعاليات.</p>
+        <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex rounded-full bg-[#0b201a] px-5 py-3 text-sm font-bold text-white">فتح نقطة الموقع</a>
+      </div>
+      <div class="space-y-4">
+        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚇</span><div><h3 class="text-xl font-bold">مترو الرياض</h3><p class="mt-2 text-sm text-[#61716a]">محطة «الملز» على المسار البرتقالي خيار عملي للوصول إلى المنطقة. أكمل الجزء الأخير سيراً أو بسيارة أجرة بحسب بوابة الدخول ودرجة الحرارة. راجع تطبيق «درب» أو خريطة النقل الرسمية للمسار النهائي والتحويلات.</p></div></div></article>
+        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚌</span><div><h3 class="text-xl font-bold">حافلات الرياض</h3><p class="mt-2 text-sm text-[#61716a]">تخدم شبكة الحافلات حي الملز ومحيط المنشآت الرياضية. أرقام المسارات ومواقع التوقف قابلة للتحديث، لذلك استخدم مخطط الرحلات الرسمي في يوم الزيارة بدلاً من الاعتماد على رقم حافلة محفوظ.</p></div></div></article>
+        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">✈️</span><div><h3 class="text-xl font-bold">من مطار الملك خالد الدولي</h3><p class="mt-2 text-sm text-[#61716a]">الأبسط هو سيارة أجرة مرخصة أو خدمة نقل مرخصة مباشرة إلى الملز. بالنقل العام، ادخل شبكة المترو عبر مسار المطار ثم بدّل داخل الشبكة باتجاه المسار البرتقالي ومنطقة الملز؛ وقت الرحلة يعتمد على التحويلات وفترات الانتظار.</p></div></div></article>
+        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚕</span><div><h3 class="text-xl font-bold">سيارة الأجرة والنقل المرخص</h3><p class="mt-2 text-sm text-[#61716a]">اطلب إنزالك عند البوابة الأقرب لمقصدك داخل المنتزه، واحتفظ بنقطة الالتقاء للعودة. بعد الفعاليات قد يزداد زمن الانتظار والازدحام حول المداخل.</p></div></div></article>
+        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚗</span><div><h3 class="text-xl font-bold">السيارة والمواقف</h3><p class="mt-2 text-sm text-[#61716a]">وثائق إنشاء المنتزه تشير إلى أكثر من ألف موقف سيارة. لا يعني ذلك ضمان توفر موقف عند الذروة؛ في نهاية الأسبوع والفعاليات، الوصول المبكر أو النقل العام أكثر قابلية للتنبؤ.</p></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section">
+    <div class="shell">
+      <span class="kicker">احتياجات الزائر</span>
+      <h2 class="section-title">من دورة المياه إلى شحن السيارة</h2>
+      <p class="lead">نوصي بنوع الخدمة لا باسم متجر أو فندق أو مطعم، حفاظاً على حياد الدليل غير الربحي.</p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <article class="card p-6"><h3 class="font-bold">دورات المياه والمصليات</h3><p class="mt-2 text-sm text-[#61716a]">تذكر أوصاف المشروع وجود دورات مياه موزعة ومصليات للرجال والنساء. اسأل موظفي الموقع عن أقرب مرفق متاح عند الحاجة.</p></article>
+        <article class="card p-6"><h3 class="font-bold">الأطفال والعائلات</h3><p class="mt-2 text-sm text-[#61716a]">توجد مناطق لعب ومساحات جلوس ومناطق مظللة. راقب الأطفال قرب المسطحات المائية وفي ساعات الازدحام.</p></article>
+        <article class="card p-6"><h3 class="font-bold">الطعام والشراب</h3><p class="mt-2 text-sm text-[#61716a]">قد تتوفر نقاط ضيافة داخل المنتزه بحسب التشغيل والفعاليات. وفي الملز توجد مطاعم ومقاهٍ ومخابز من فئات متعددة؛ اختر وفق احتياجك الغذائي دون اعتماد هذا الدليل كتوصية تجارية.</p></article>
+        <article class="card p-6"><h3 class="font-bold">الإقامة</h3><p class="mt-2 text-sm text-[#61716a]">تنتشر في وسط الرياض والملز خيارات فنادق وشقق فندقية بمستويات مختلفة. قارِن الموقع وسياسة الإلغاء ووسيلة النقل بدلاً من الاسم التجاري.</p></article>
+        <article class="card p-6"><h3 class="font-bold">البقالة والسوبرماركت</h3><p class="mt-2 text-sm text-[#61716a]">توجد متاجر مواد غذائية وصيدليات في أحياء الملز المحيطة. احمل ماءً كافياً خصوصاً في الأيام الدافئة.</p></article>
+        <article class="card p-6"><h3 class="font-bold">الوقود والشحن الكهربائي</h3><p class="mt-2 text-sm text-[#61716a]">محطات الوقود متاحة في شبكة شوارع الرياض. لا نملك توثيقاً موثوقاً لمحطة شحن كهربائي داخل المنتزه نفسه؛ افحص خريطة الشحن العامة قبل الوصول إذا كانت سيارتك كهربائية.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-[#f7f1e5]" id="food">
+    <div class="shell">
+      <span class="kicker">المأكولات القريبة</span>
+      <h2 class="section-title">اختر النوع، لا الاسم التجاري</h2>
+      <p class="lead">حي الملز منطقة حضرية مكتملة الخدمات. ولأن هذا الدليل غير ربحي ومحايد، نعرض أنماط الطعام التي قد يحتاجها الزائر من دون ترتيب مطاعم أو إحالات مدفوعة.</p>
+      <div class="mt-9 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <article class="card p-6"><h3 class="font-bold">المطبخ السعودي والخليجي</h3><p class="mt-2 text-sm text-[#61716a]">مناسب لمن يريد وجبة محلية كاملة قبل الزيارة أو بعدها. افحص ساعات العمل وخيارات العائلات مباشرة.</p></article>
+        <article class="card p-6"><h3 class="font-bold">وجبات سريعة وخفيفة</h3><p class="mt-2 text-sm text-[#61716a]">خيار عملي لزيارة قصيرة أو مع الأطفال. راجع المكونات والحساسيات الغذائية مع مقدم الخدمة.</p></article>
+        <article class="card p-6"><h3 class="font-bold">مقاهٍ ومخابز</h3><p class="mt-2 text-sm text-[#61716a]">مفيدة للاستراحة أو شراء مشروب قبل المشي. لا تعتمد على إمكانية إدخال الطعام إلى أي فعالية خاصة دون التحقق.</p></article>
+        <article class="card p-6"><h3 class="font-bold">خيارات غذائية خاصة</h3><p class="mt-2 text-sm text-[#61716a]">ابحث حسب احتياجك مثل النباتي أو مسببات الحساسية أو قيود السكر والملح، وتحقق من المكونات مباشرة.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-[#0b201a] text-white" id="nearby">
+    <div class="shell grid gap-12 lg:grid-cols-[1fr_1fr]">
+      <div>
+        <span class="kicker !text-[#b6e2d3]">معالم قريبة</span>
+        <h2 class="section-title">أماكن عامة تستحق أن تعرف موقعها</h2>
+        <p class="max-w-xl text-white/58">ليست توصيات تجارية؛ هي معالم عامة وثقافية يمكن دمجها في يوم واحد بحسب الوقت والمسافة وحركة المرور.</p>
+      </div>
+      <div class="grid gap-3">
+        <div class="rounded-2xl border border-white/10 p-5"><strong>استاد الأمير فيصل بن فهد</strong><p class="mt-1 text-sm text-white/50">من أبرز معالم الملز المجاورة للمنتزه، وقد يزيد نشاطه ضغط الحركة والمواقف في أيام المباريات والفعاليات.</p></div>
+        <div class="rounded-2xl border border-white/10 p-5"><strong>حديقة الحيوان بالرياض</strong><p class="mt-1 text-sm text-white/50">وجهة عائلية عامة في نطاق الملز، مناسبة ليوم عائلي أطول إذا سمحت ساعات التشغيل والطقس.</p></div>
+        <div class="rounded-2xl border border-white/10 p-5"><strong>مركز الملك عبدالعزيز التاريخي والمتحف الوطني</strong><p class="mt-1 text-sm text-white/50">وجهة ثقافية في وسط الرياض لفهم تاريخ المملكة والمدينة قبل أو بعد زيارة المنتزه.</p></div>
+        <div class="rounded-2xl border border-white/10 p-5"><strong>قصر المصمك والمنطقة التاريخية المحيطة</strong><p class="mt-1 text-sm text-white/50">محطة تاريخية مختلفة في الطابع، ويمكن الوصول إليها بوسائل النقل داخل وسط الرياض.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="map" class="section bg-[#f7f1e5]">
+    <div class="shell">
+      <div class="mb-8"><span class="kicker">الخريطة</span><h2 class="section-title">منتزه الملك عبدالله، حي الملز</h2><p class="lead">استخدم الخريطة لتأكيد البوابة ومسار الوصول. تضمين خرائط جوجل خدمة خارجية وقد تستخدم تقنيات تخزين خاصة بها.</p></div>
+      <div class="overflow-hidden rounded-[32px] border border-[#0b201a]/10 bg-white shadow-[var(--shadow)]">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6458.3861580959465!2d46.734584477163054!3d24.66636567805645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f043b45575437%3A0xa2bebdcec14359bd!2z6Zi_5biD5p2c5ouJ5Zu9546L5YWs5Zut!5e1!3m2!1sar!2ssa!4v1787621558586!5m2!1sar!2ssa"
+          width="100%" height="520" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="خريطة منتزه الملك عبدالله في الرياض"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="source-title">
+    <div class="shell grid gap-9 lg:grid-cols-[.75fr_1.25fr]">
+      <div><span class="kicker">المنهج والمصادر</span><h2 id="source-title" class="section-title">معلومة قابلة للمراجعة، لا دعاية سياحية</h2></div>
+      <div class="card p-8 text-sm leading-8 text-[#53665e]">
+        <p>نقارن المعلومات الثابتة بين المواد العامة لأمانة منطقة الرياض، ومنصة «روح السعودية» التابعة للهيئة السعودية للسياحة، ووكالة الأنباء السعودية، ومواد تخطيطية وصحفية موثقة، إضافة إلى بيانات الموقع التي يزوّد بها الزائر عبر الخرائط.</p>
+        <p class="mt-4">لا نثبت جداول عروض أو أسعاراً أو مسارات حافلات بوصفها حقائق دائمة عندما لا يتوفر مصدر رسمي ثابت. المعلومة التشغيلية المتغيرة تُعرض بصيغة تحفظية ويُطلب التحقق منها قبل السفر.</p>
+        <p class="mt-4">الصور المستخدمة توثيقية حقيقية من ويكيميديا كومنز: صورة البحيرة متاحة بتنازل حقوقي عام، وصورة المدخل بترخيص مشاركة ونَسب مفتوح وفق صفحة المصدر. لا تُستخدم صور مولدة بالذكاء الاصطناعي على أنها صور للمكان.</p>
+        <div class="mt-6 border-t border-[#0b201a]/10 pt-5">
+          <strong class="text-[#071713]">مصادر مختارة للمراجعة</strong>
+          <ul class="mt-3 space-y-2 pr-5 text-sm">
+            <li><a class="text-[#1d6b56] underline underline-offset-4" href="https://www.alriyadh.com/872321" target="_blank" rel="noopener noreferrer">جريدة الرياض: تغطية افتتاح المنتزه وبيانات المشروع الأساسية</a></li>
+            <li><a class="text-[#1d6b56] underline underline-offset-4" href="https://www.spa.gov.sa/1214224" target="_blank" rel="noopener noreferrer">وكالة الأنباء السعودية: توثيق استخدام المنتزه للفعاليات والنافورة التفاعلية</a></li>
+            <li><a class="text-[#1d6b56] underline underline-offset-4" href="https://www.visitsaudi.com/content/dam/documents/en-riyadh-guide.pdf" target="_blank" rel="noopener noreferrer">روح السعودية: دليل مدينة الرياض ومعلومات المنتزه</a></li>
+            <li><a class="text-[#1d6b56] underline underline-offset-4" href="https://alriyadh.gov.sa/ar/content/sustainable-development-projects" target="_blank" rel="noopener noreferrer">أمانة منطقة الرياض: مشاريع التنمية المستدامة وربط معالم حي الملز</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section bg-[#fffdf7]">
+    <div class="shell">
+      <span class="kicker">الأسئلة الشائعة</span>
+      <h2 class="section-title">قبل أن تذهب</h2>
+      <div class="mt-8 grid gap-3 lg:grid-cols-2">
+        {faq.map((item) => (
+          <details class="card group p-6 open:bg-white">
+            <summary class="cursor-pointer list-none pr-0 font-bold marker:hidden">{item.q}<span class="float-left text-[#1d6b56] transition group-open:rotate-45">＋</span></summary>
+            <p class="mt-4 border-t border-[#0b201a]/8 pt-4 text-sm leading-7 text-[#61716a]">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[#e5cda7] py-16">
+    <div class="shell flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+      <div><p class="text-sm font-bold text-[#1d6b56]">خلاصة الزيارة</p><h2 class="mt-2 text-3xl font-black tracking-tight lg:text-5xl">اذهب للمكان، لا لموعدٍ مفترض.</h2><p class="mt-3 max-w-2xl text-sm text-[#48584f]">تحقق من ساعات اليوم والفعاليات، اختر وسيلة الوصول، وخذ وقتك للمشي والجلوس. هذه هي الطريقة الأكثر موثوقية للاستمتاع بالمنتزه.</p></div>
+      <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-full bg-[#071713] px-6 py-3 font-bold text-white">ابدأ من الخريطة</a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #071713;
+  --night: #0b201a;
+  --forest: #12352b;
+  --emerald: #1d6b56;
+  --mint: #b6e2d3;
+  --sand: #e5cda7;
+  --sand-light: #f7f1e5;
+  --cream: #fffdf7;
+  --muted: #61716a;
+  --line: rgba(9, 39, 31, .13);
+  --shadow: 0 24px 60px rgba(4, 31, 24, .12);
+}
+
+html { scroll-behavior: smooth; background: var(--cream); }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--cream);
+  font-family: Tahoma, "Noto Sans Arabic", Arial, sans-serif;
+  line-height: 1.8;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: #b6e2d3; color: #071713; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+button, input { font: inherit; }
+
+.shell { width: min(1180px, calc(100% - 32px)); margin-inline: auto; }
+.section { padding: 84px 0; }
+.kicker { display:inline-flex; align-items:center; gap:.55rem; font-size:.78rem; font-weight:800; letter-spacing:.04em; color:var(--emerald); }
+.kicker::before { content:""; width:28px; height:1px; background:currentColor; }
+.section-title { margin:.55rem 0 1rem; font-size:clamp(2rem,5vw,4rem); line-height:1.15; letter-spacing:-.035em; }
+.lead { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+.card { border:1px solid var(--line); background:rgba(255,255,255,.76); border-radius:24px; box-shadow:0 10px 30px rgba(5,31,24,.05); }
+.soft-grid { background-image: linear-gradient(rgba(9,39,31,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(9,39,31,.04) 1px, transparent 1px); background-size:32px 32px; }
+
+.skip-link { position:fixed; inset-inline-start:16px; top:-100px; z-index:100; padding:.7rem 1rem; border-radius:999px; background:var(--ink); color:white; }
+.skip-link:focus { top:16px; }
+
+.rich-copy h1 { font-size: clamp(2.25rem, 6vw, 4.4rem); line-height:1.15; margin:0 0 1rem; }
+.rich-copy h2 { font-size:1.55rem; line-height:1.4; margin:2.3rem 0 .75rem; }
+.rich-copy h3 { font-size:1.15rem; margin:1.5rem 0 .45rem; }
+.rich-copy p, .rich-copy li { color:#43564e; }
+.rich-copy ul { padding-inline-start:1.2rem; list-style:disc; }
+.rich-copy a { color:var(--emerald); text-decoration:underline; text-underline-offset:3px; }
+
+@media (max-width: 720px) {
+  .section { padding: 64px 0; }
+  .shell { width: min(100% - 24px, 1180px); }
+}

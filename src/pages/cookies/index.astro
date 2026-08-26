@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="إعدادات ملفات الارتباط | دليل منتزه الملك عبدالله" description="إدارة تفضيلات ملفات الارتباط والتحليل في دليل منتزه الملك عبدالله.">
+  <section class="section soft-grid">
+    <div class="shell max-w-4xl">
+      <article class="rich-copy">
+        <p class="kicker">التحكم بخصوصيتك</p>
+        <h1>إعدادات ملفات الارتباط</h1>
+        <p class="text-sm">آخر تحديث: أغسطس 2026</p>
+        <p>نستخدم أقل قدر ممكن من التخزين. يمكنك تغيير اختياراتك في أي وقت. حفظ الإعدادات يتم في متصفحك ولا يحتاج إلى حساب.</p>
+      </article>
+
+      <form id="consent-form" class="mt-10 space-y-4" aria-label="إعدادات الموافقة">
+        <label class="card flex cursor-not-allowed items-start justify-between gap-6 p-6">
+          <span><strong class="block text-lg">ملفات ضرورية</strong><small class="mt-1 block max-w-xl leading-6 text-[#61716a]">ضرورية لحفظ اختيارك وتشغيل الوظائف الأساسية. لا يمكن تعطيلها من لوحة الإعدادات.</small></span>
+          <input type="checkbox" checked disabled class="mt-2 h-5 w-5 accent-[#1d6b56]" />
+        </label>
+        <label class="card flex cursor-pointer items-start justify-between gap-6 p-6">
+          <span><strong class="block text-lg">ملفات التحليل</strong><small class="mt-1 block max-w-xl leading-6 text-[#61716a]">تسمح بتحميل خدمة إحصاءات جوجل لفهم استخدام الموقع بصورة إحصائية. معرّف القياس: G-HXM22WWPKP.</small></span>
+          <input id="analytics" type="checkbox" class="mt-2 h-5 w-5 accent-[#1d6b56]" />
+        </label>
+        <label class="card flex cursor-pointer items-start justify-between gap-6 p-6">
+          <span><strong class="block text-lg">ملفات التفضيلات</strong><small class="mt-1 block max-w-xl leading-6 text-[#61716a]">تسمح بحفظ إعدادات واجهة إضافية إذا أضيفت مستقبلاً. النسخة الحالية لا تعتمد عليها لوظيفة أساسية.</small></span>
+          <input id="preferences" type="checkbox" class="mt-2 h-5 w-5 accent-[#1d6b56]" />
+        </label>
+        <label class="card flex cursor-pointer items-start justify-between gap-6 p-6">
+          <span><strong class="block text-lg">ملفات التسويق</strong><small class="mt-1 block max-w-xl leading-6 text-[#61716a]">مخصصة للإعلانات والتخصيص التسويقي. الموقع غير ربحي ولا يشغّل حالياً أدوات إعلانات مخصصة، ولذلك تبقى متوقفة افتراضياً.</small></span>
+          <input id="marketing" type="checkbox" class="mt-2 h-5 w-5 accent-[#1d6b56]" />
+        </label>
+        <div class="flex flex-wrap gap-3 pt-3">
+          <button type="submit" class="rounded-full bg-[#0b201a] px-6 py-3 font-bold text-white">حفظ التفضيلات</button>
+          <button id="reject-all" type="button" class="rounded-full border border-[#0b201a]/20 bg-white px-6 py-3 font-bold text-[#071713]">رفض غير الضروري</button>
+        </div>
+        <p id="consent-status" class="min-h-7 text-sm font-bold text-[#1d6b56]" aria-live="polite"></p>
+      </form>
+
+      <article class="rich-copy mt-14 border-t border-[#0b201a]/10 pt-8">
+        <h2>كيف تعمل الموافقة؟</h2>
+        <p>عند حفظ الإعدادات نخزن كائناً صغيراً في التخزين المحلي للمتصفح باسم خاص بهذا الموقع. إذا وافقت على التحليل، تُحمّل مكتبة إحصاءات جوجل بعد الموافقة فقط. رفض التحليل يمنع الموقع من تحميلها من جانبه.</p>
+        <h2>الخدمات المضمنة</h2>
+        <p>خريطة جوجل في الصفحة الرئيسية خدمة مضمّنة من طرف ثالث وقد تستخدم تقنيات تخزين مستقلة عن لوحة الموافقة الخاصة بنا عند تحميلها. إذا كنت لا ترغب في الاتصال بخدمة الخرائط، يمكنك تجنب قسم الخريطة أو استخدام إعدادات الحماية في متصفحك.</p>
+        <h2>تغيير رأيك</h2>
+        <p>يمكنك العودة إلى هذه الصفحة في أي وقت وتغيير الاختيارات. حذف بيانات الموقع من المتصفح يمسح التفضيلات المخزنة محلياً.</p>
+      </article>
+    </div>
+  </section>
+
+  <script>
+    const storageKey = 'kap-consent-v1';
+    const form = document.querySelector<HTMLFormElement>('#consent-form');
+    const analytics = document.querySelector<HTMLInputElement>('#analytics');
+    const preferences = document.querySelector<HTMLInputElement>('#preferences');
+    const marketing = document.querySelector<HTMLInputElement>('#marketing');
+    const reject = document.querySelector<HTMLButtonElement>('#reject-all');
+    const statusMessage = document.querySelector<HTMLElement>('#consent-status');
+
+    const read = () => {
+      try { return JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch { return null; }
+    };
+    const existing = read();
+    if (existing) {
+      if (analytics) analytics.checked = existing.analytics === true;
+      if (preferences) preferences.checked = existing.preferences === true;
+      if (marketing) marketing.checked = existing.marketing === true;
+    }
+    const save = (values: { analytics: boolean; preferences: boolean; marketing: boolean }) => {
+      localStorage.setItem(storageKey, JSON.stringify({ necessary: true, ...values }));
+      window.dispatchEvent(new CustomEvent('kap:consent'));
+      if (statusMessage) statusMessage.textContent = 'تم حفظ اختياراتك على هذا الجهاز.';
+    };
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      save({ analytics: !!analytics?.checked, preferences: !!preferences?.checked, marketing: !!marketing?.checked });
+    });
+    reject?.addEventListener('click', () => {
+      if (analytics) analytics.checked = false;
+      if (preferences) preferences.checked = false;
+      if (marketing) marketing.checked = false;
+      save({ analytics: false, preferences: false, marketing: false });
+    });
+  </script>
+</BaseLayout>

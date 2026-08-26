@@ -1,0 +1,16 @@
+---
+import Logo from './Logo.astro';
+---
+<header class="sticky top-0 z-50 border-b border-white/10 bg-[#071713]/94 text-white backdrop-blur-md">
+  <div class="shell flex min-h-[72px] items-center justify-between gap-4">
+    <Logo inverse />
+    <nav aria-label="التنقل الرئيسي" class="hidden items-center gap-6 text-sm text-white/78 md:flex">
+      <a class="hover:text-white" href="/#story">الحكاية</a>
+      <a class="hover:text-white" href="/#visit">خطط للزيارة</a>
+      <a class="hover:text-white" href="/#transport">الوصول</a>
+      <a class="hover:text-white" href="/#services">الخدمات</a>
+      <a class="hover:text-white" href="/#faq">الأسئلة</a>
+    </nav>
+    <a href="/#map" class="rounded-full border border-white/20 bg-white px-4 py-2 text-sm font-bold text-[#071713] transition hover:bg-[#e5cda7]">افتح الخريطة</a>
+  </div>
+</header>

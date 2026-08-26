@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#071713"/>
+  <circle cx="1010" cy="80" r="260" fill="#12352b"/>
+  <circle cx="1090" cy="560" r="360" fill="#0b201a" stroke="#1d6b56" stroke-width="2"/>
+  <path d="M690 390c55-8 92-48 118-115 27 68 67 108 122 115 50-8 88-46 121-115" fill="none" stroke="#b6e2d3" stroke-width="13" stroke-linecap="round" opacity=".9"/>
+  <path d="M745 438h280" stroke="#e5cda7" stroke-width="13" stroke-linecap="round"/>
+  <path d="M860 365V170m0 35c-54-57-111-29-132 16 53-3 94 23 132 70m0-86c54-57 111-29 132 16-53-3-94 23-132 70" fill="none" stroke="#e5cda7" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <g font-family="Tahoma, Arial, sans-serif" text-anchor="end">
+    <text x="560" y="250" fill="#e5cda7" font-size="38" font-weight="700">الملز · الرياض</text>
+    <text x="560" y="330" fill="#ffffff" font-size="67" font-weight="800">دليل منتزه الملك عبدالله</text>
+    <text x="560" y="392" fill="#b6e2d3" font-size="28">دليل مستقل وغير ربحي للزيارة</text>
+  </g>
+</svg>
