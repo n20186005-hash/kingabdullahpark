@@ -1,0 +1,40 @@
+{
+  "name": "King Abdullah Park Riyadh - Visitor Guide",
+  "short_name": "King Abdullah Park",
+  "description": "دليل الزائر لمنتزه الملك عبدالله بالرياض - معلومات الزيارة، الخريطة، الأسئلة الشائعة",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#071713",
+  "theme_color": "#0b201a",
+  "lang": "ar-SA",
+  "dir": "rtl",
+  "categories": ["travel", "lifestyle", "reference"],
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/og-cover.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

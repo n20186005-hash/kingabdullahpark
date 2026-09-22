@@ -1,0 +1,506 @@
+---
+/**
+ * WeatherPanel — 实时天气 + 7 日预报 + 面向普通游客的智能可执行建议
+ * （仅供服务器端渲染使用；渲染层 DOM 绝不暴露"免费/API/Open-Meteo/接口/密钥"等技术字样）
+ *
+ * 数据字段扩展：
+ *   hourly: temperature_2m, apparent_temperature, precipitation_probability, weathercode,
+ *           relative_humidity_2m, wind_speed_10m, wind_gusts_10m, visibility, uv_index
+ *   daily : weathercode, temperature_2m_max, temperature_2m_min, sunshine_duration,
+ *           precipitation_probability_max, precipitation_sum, uv_index_max,
+ *           wind_speed_10m_max, wind_gusts_10m_max
+ */
+
+// ---------- 1. 10 分钟缓存 ----------
+const CACHE_TTL_MS = 10 * 60 * 1000;
+/** @type {Map<string, any>} */
+const weatherCache = new Map();
+
+function cacheKey() {
+  return String(Math.floor(Date.now() / CACHE_TTL_MS));
+}
+
+// ---------- 2. Open-Meteo 拉取 ----------
+const LAT = 24.6664;
+const LON = 46.7346;
+
+const hourlyVars = [
+  'temperature_2m',
+  'apparent_temperature',
+  'precipitation_probability',
+  'weathercode',
+  'relative_humidity_2m',
+  'wind_speed_10m',
+  'wind_gusts_10m',
+  'visibility',
+  'uv_index',
+].join(',');
+
+const dailyVars = [
+  'weathercode',
+  'temperature_2m_max',
+  'temperature_2m_min',
+  'sunshine_duration',
+  'precipitation_probability_max',
+  'precipitation_sum',
+  'uv_index_max',
+  'wind_speed_10m_max',
+  'wind_gusts_10m_max',
+].join(',');
+
+const weatherUrl =
+  `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+  `&hourly=${hourlyVars}` +
+  `&daily=${dailyVars}` +
+  `&timezone=Asia%2FRiyadh` +
+  `&forecast_days=7`;
+
+type ParseResult =
+  | { ok: true;
+      current: {
+        tempC: number; apparentC: number; precipProbNow: number; code: number;
+        humidity: number; windKph: number; gustKph: number; uvNow: number; visibilityKm: number;
+      };
+      daily: Array<{
+        dayName: string; dayDate: string; tempMaxC: number; tempMinC: number;
+        sunshineHrs: number; precipProbMax: number; precipSumMm: number;
+        uvMax: number; windMaxKph: number; gustMaxKph: number; code: number;
+      }>;
+    }
+  | { ok: false };
+
+let weather: ParseResult = { ok: false };
+try {
+  const key = cacheKey();
+  if (!weatherCache.has(key)) {
+    const res = await fetch(weatherUrl, {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) throw new Error('fetch not ok: ' + res.status);
+    const raw = await res.json();
+    weatherCache.set(key, raw);
+  }
+  const raw = weatherCache.get(key);
+
+  const hourly = raw.hourly || {};
+  const times = hourly.time || [];
+  // 找到最接近当前整点的小时索引（向前取最近）
+  const now = new Date();
+  const nowMs = now.getTime();
+  let hourIdx = 0;
+  let bestDelta = Infinity;
+  for (let i = 0; i < times.length; i++) {
+    const t = new Date(times[i]).getTime();
+    const d = Math.abs(t - nowMs);
+    if (d < bestDelta) { bestDelta = d; hourIdx = i; }
+  }
+  const safe = (arr: any[], i: number, fallback: number) =>
+    typeof arr?.[i] === 'number' && Number.isFinite(arr[i]) ? arr[i] : fallback;
+
+  const tempC = Math.round(safe(hourly.temperature_2m, hourIdx, 0));
+  const apparentC = Math.round(safe(hourly.apparent_temperature, hourIdx, tempC));
+  const precipProbNow = Math.round(safe(hourly.precipitation_probability, hourIdx, 0));
+  const code = Math.round(safe(hourly.weathercode, hourIdx, 0));
+  const humidity = Math.round(safe(hourly.relative_humidity_2m, hourIdx, 50));
+  const windKph = +(safe(hourly.wind_speed_10m, hourIdx, 0)).toFixed(1);
+  const gustKph = +(safe(hourly.wind_gusts_10m, hourIdx, windKph)).toFixed(1);
+  const uvNow = +(safe(hourly.uv_index, hourIdx, 0)).toFixed(1);
+  const visibilityKm = +(safe(hourly.visibility, hourIdx, 10) / 1000).toFixed(1);
+
+  const daily = raw.daily || {};
+  const dTimes = daily.time || [];
+  const arDayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const dailyArr: any[] = [];
+  for (let i = 0; i < dTimes.length; i++) {
+    const dt = new Date(dTimes[i]);
+    const dayName = arDayNames[dt.getDay()];
+    const dayDate = `${dt.getDate()}/${dt.getMonth() + 1}`;
+    dailyArr.push({
+      dayName, dayDate,
+      tempMaxC: Math.round(safe(daily.temperature_2m_max, i, 0)),
+      tempMinC: Math.round(safe(daily.temperature_2m_min, i, 0)),
+      sunshineHrs: +(safe(daily.sunshine_duration, i, 0) / 3600).toFixed(1),
+      precipProbMax: Math.round(safe(daily.precipitation_probability_max, i, 0)),
+      precipSumMm: +(safe(daily.precipitation_sum, i, 0)).toFixed(1),
+      uvMax: +(safe(daily.uv_index_max, i, 0)).toFixed(1),
+      windMaxKph: +(safe(daily.wind_speed_10m_max, i, 0)).toFixed(1),
+      gustMaxKph: +(safe(daily.wind_gusts_10m_max, i, 0)).toFixed(1),
+      code: Math.round(safe(daily.weathercode, i, 0)),
+    });
+  }
+
+  weather = {
+    ok: true,
+    current: { tempC, apparentC, precipProbNow, code, humidity, windKph, gustKph, uvNow, visibilityKm },
+    daily: dailyArr,
+  };
+} catch (_e) {
+  // 静默降级：渲染层统一显示"البيانات الحالية غير متاحة الآن"——绝不暴露错误堆栈或技术词
+  weather = { ok: false };
+}
+
+// ---------- 3. WMO 图标与标签（面向游客，非专业） ----------
+function wmoIcon(code: number, precipProb: number): string {
+  if (precipProb >= 70 || (code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
+  if (code >= 95) return '⛈️';
+  if (code >= 45 && code <= 48) return '🌫️';
+  if (precipProb >= 30 || (code >= 3 && code <= 4)) return '⛅';
+  if (code >= 1 && code <= 2) return '🌤️';
+  if (code === 0) return '☀️';
+  return '☀️';
+}
+function wmoLabel(code: number, precipProb: number): string {
+  if (code >= 95) return 'عواصف رعدية';
+  if (precipProb >= 60 || (code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'محتمل المطر';
+  if (code >= 45 && code <= 48) return 'ضباب أو دخان';
+  if (precipProb >= 30 || (code >= 3 && code <= 4)) return 'غيوم متفرقة';
+  if (code >= 1 && code <= 2) return 'شمس مع سحب خفيفة';
+  if (code === 0) return 'صافٍ';
+  return 'صافٍ بشكل عام';
+}
+// 降雨强度粗分（阿拉伯语游客口语）：弱 / 中 / 强
+function rainIntensityLabel(code: number, precipProb: number, precipMmNow = 0): string {
+  if (code >= 95) return 'عاصفة رعدية';
+  if ((code >= 81 && code <= 82) || (code >= 63 && code <= 67)) return 'مطر متوسط إلى غزير';
+  if (code >= 51 || code === 61 || code === 80 || precipMmNow > 0.1) return 'مطر خفيف أو رذاذ';
+  if (precipProb >= 60) return 'فرصة عالية للمطر';
+  return '';
+}
+
+// ---------- 4. 建议生成器（满足条件才 push；空数组 → UI 整个区块不渲染） ----------
+
+/** 4.1 风险警告（置顶红框，优先级最高，仅在触发时出现） */
+function buildRiskAlerts(c: ParseResult extends { ok: true } ? any : never, today: any): string[] {
+  const alerts: string[] = [];
+  const hasThunder = c.code >= 95;
+  const heavyRain =
+    (c.code >= 81 && c.code <= 82) ||
+    (c.code >= 63 && c.code <= 67) ||
+    today?.precipSumMm >= 10;
+  const windVeryStrong = c.gustKph >= 50 || today?.gustMaxKph >= 50;
+  const extremeHeat = c.tempC >= 42 || today?.tempMaxC >= 44;
+  const badFog = c.code >= 45 && c.visibilityKm <= 2;
+
+  if (hasThunder) {
+    alerts.push('⚠️ تحذير صحّة وسلامة: هطل رعدي متوقّع. ابتعد عن الأشجار العالية وحدائق البحيرات والمرتفعات، واغلق النوافذ في المقاهي المفتوحة داخل المنتزه.');
+  }
+  if (heavyRain && !hasThunder) {
+    alerts.push('⚠️ هطول غزير متوقّع: تجنّب المناطق المنخفضة، واحرص على ألا تقترب من ضفاف بحيرة المنتزه. قد تتوقف نافورة الموسيقى المؤقتة مؤقتاً.');
+  }
+  if (windVeryStrong && !heavyRain && !hasThunder) {
+    alerts.push('⚠️ رياح قوية: أبقِ معك قبعة وأشياء خفيفة ثابتة، وابتعد عن الألواح الإعلانية وأشجار النخيل الكبيرة داخل الملاعب.');
+  }
+  if (extremeHeat && !hasThunder) {
+    alerts.push('⚠️ حرارة قصوى: لا تمشِ في الفترة من 11 صباحاً حتى 5 مساءً في المسارات المفتوحة. استخدم المظلات والكنائس المظللة والمطاعم المكيفة داخل المنتزه.');
+  }
+  if (badFog && !hasThunder && !heavyRain) {
+    alerts.push('⚠️ ضباب كثيف أو تراب: انتبه عند السير على الأرصفة وبحافز البحيرة، وخفّض سرعة السيارات في مواقف المنتزه.');
+  }
+  return alerts;
+}
+
+/** 4.2 出行穿搭（阿拉伯语口语，按温度+湿度+风力+降水概率组合） */
+function buildOutfitAdvice(c: any, todayDelta: number): string[] {
+  const list: string[] = [];
+  const { tempC, apparentC, humidity, windKph, precipProbNow, code } = c;
+  // 基础温度档位（按体感，不按温度计）
+  if (apparentC >= 40) list.push('ملابس قطنية فاتحة وواسعة جداً؛ يفضّل تجنّب الألوان الداكنة والأقمشة الصوفية والجلدية.');
+  else if (apparentC >= 32) list.push('ملابس خفيفة قصيرة أو طويلة قطنية تنفّس؛ مع واقٍ للشمس وغطاء للرأس.');
+  else if (apparentC >= 22) list.push('أقمشة تنفّس مع قميص أو فستان طويل للوقاية من الشمس.');
+  else if (apparentC >= 15) list.push('سترة خفيفة أو سترة قابلة للطيّ خصوصاً بعد غروب الشمس.');
+  else list.push('سترة دافئة وسترة داخلية، مع شال أو كوفيّة عند الخروج في الليل.');
+
+  // 湿度 —— 利雅得干燥常见，但春季有湿天
+  if (tempC >= 30 && humidity >= 65) list.push('رطوبة عالية مع الحرارة: تجنّب الملابس الاصطناعية الغير قابلة للتنفّس، وخذ معك تغيير إضافي بسيط.');
+  if (tempC <= 18 && humidity >= 70) list.push('جو بارد ورطب: ارتدي طبقات ثقيلة قليلة الامتصاص بدل طبقة واحدة سميكة.');
+
+  // 昼夜温差
+  if (todayDelta >= 9) list.push(`فرق حرارة اليوم والليل كبير (حوالي ${Math.round(todayDelta)} درجة)؛ خذ سترة قابلة للطيّ معك حتى لو كان الجو دافئاً نهاراً.`);
+
+  // 降水 / 风雨
+  const rainy = precipProbNow >= 40 || (code >= 51 && code <= 67) || (code >= 80 && code <= 82);
+  const windy = windKph >= 28;
+  if (rainy && windy) list.push('مطر مع رياح: ارتدي سترة مقاومة للماء بدل المظلة الطويلة (تقلبها الرياح سهلة).');
+  else if (rainy) list.push('مطر متوقّع: أحذية مقاومة للبلل ستفيد كثيراً عند مشي الأرصفة حول البحيرة.');
+  if (windy && !rainy) list.push('رياح متوسطة إلى قوية: لا ترتدي الفساتين الطويلة الرقيقة أو الأوشحة الفضفاضة.');
+
+  return list;
+}
+
+/** 4.3 游玩安排（King Abdullah Park 专属场景：湖岸 / 音乐喷泉 / 儿童游乐场 / 步行道 / 傍晚野餐） */
+function buildPlayPlan(c: any): string[] {
+  const plan: string[] = [];
+  const { tempC, apparentC, precipProbNow, uvNow, code, visibilityKm } = c;
+  const rainNow = precipProbNow >= 40 || (code >= 51 && code <= 82);
+  const thunder = code >= 95;
+
+  // 基础时间建议
+  if (apparentC >= 35) {
+    plan.push('أقصر وقت المشي في الفترة الحارة؛ يفضّل زيارة المنتزه بعد العصر أو ليلاً عندما تنخفض الحرارة، وتعمل نافورة الموسيقى والإضاءة الليلية.');
+  } else if (apparentC >= 18 && !rainNow) {
+    plan.push('جو ممتاز للتنزه المشي على مسارات البحيرة والجلوس في المساحات الخضراء.');
+  }
+
+  // 湖/喷泉/儿童专属
+  if (rainNow || thunder) {
+    plan.push('توقّف مؤقت لنافورة الموسيقى والمشاريع المفتوحة على الماء محتمل؛ أغلق أنشطة الألعاب المائية للأطفال عند ظهور أول هطول.');
+    plan.push('راقب أطفالك عن كثب عند ضفاف البحيرة والممرات الزلقة بعد المطر.');
+  } else {
+    plan.push('نافورة الموسيقى وعروض الإضاءة الليلية تعمل عادةً بعد المغرب؛ تحقق من جداول المنتزه الرسمية عند الوصول.');
+  }
+  if (!rainNow && visibilityKm >= 8 && (code <= 2 || precipProbNow < 20)) {
+    plan.push('رؤية صافية اليوم، مناسبة جداً لالتقاط الصور في ممرات النخيل وحول البحيرة والمنحوتات الخضراء.');
+  }
+
+  // UV & 儿童
+  if (uvNow >= 5 && !rainNow) {
+    plan.push('أشعة الشمس القادوة اليوم؛ خذ فترات راحة في المناطق المظللة والمطاعم كل ٣٠-٤٥ دقيقة، ولا تدع الأطفال يلعبون مباشرة تحت الشمس لفترات طويلة.');
+  }
+
+  // 阴天柔和 = 适合久逛 + 拍照
+  if ((code >= 3 && code <= 4) && precipProbNow < 30 && !rainNow) {
+    plan.push('غيوم خفيفة اليوم، الظلّ طبيعي ومناسب لجولة طويلة أو نزهة عائلية بدون إرهاق حراري.');
+  }
+
+  // 野餐友好
+  if (!rainNow && apparentC >= 15 && apparentC <= 32 && !thunder) {
+    plan.push('جو مناسب للنزهة العائلية في المساحات الخضراء؛ لا تنسَ مفرش ناعم وطفاية للنار إذا استخدمت شواء محمول (في أماكنه المخصصة فقط).');
+  }
+
+  return plan;
+}
+
+/** 4.4 随身物品（满足条件才推荐，不需要的不渲染；避免全显示） */
+function buildCarryItems(c: any): string[] {
+  const items: string[] = [];
+  const { tempC, apparentC, humidity, precipProbNow, windKph, uvNow, code } = c;
+  const rainNow = precipProbNow >= 40 || (code >= 51 && code <= 82);
+  const windy = windKph >= 28;
+
+  // 水 —— 温度高或干燥必带
+  if (apparentC >= 28 || humidity <= 30) {
+    items.push('كمية ماء كافية لكل فرد (نصف لتر على الأقل لكل ساعتين مشي)؛ تعبئة من المياه تعيد ملء القنينة في مواقع المنتزه إن توفرت.');
+  }
+  if (apparentC >= 35) items.push('مرطّبات فموية ومسحوق أملاح بسيط أو مشروب مع أملاح لإعادة التوازن عند التعرّق الكثير.');
+
+  // UV 组
+  if (uvNow >= 5) {
+    items.push('واقٍ شمس قوي، ونظارة شمسية، وغطاء رأس واسع الحواف.');
+  }
+
+  // 雨组（三档）
+  if (precipProbNow >= 70 || (code >= 61 && code <= 67)) {
+    items.push(windy ? 'معطف مطار قابل للطيّ (أفضل من مظلة طويلة مع الرياح)' : 'مظلة واقية كبيرة.');
+  } else if (precipProbNow >= 40) {
+    items.push('مظلة طيّبة صغيرة كاحتياط يومي حتى لو لم يظهر المطر بعد.');
+  }
+
+  // 风组
+  if (windy && !rainNow) {
+    items.push('قبعة بشريط تحت الذقن أو قبعة رياضية لكي لا تُطيرها الرياح.');
+  }
+
+  // 冷组
+  if (apparentC <= 15) {
+    items.push('سترة دافئة إضافية وكمّامات لليدين عند المشي ليلاً أو الانتظار طويلاً.');
+  }
+
+  // 干燥 + 沙尘
+  if (humidity <= 25 || (code >= 45 && !(code <= 48 && code >= 45 && visibilityKm < 3))) {
+    items.push('مناديل مبللة ومرطب للشفاه؛ جو الرياض الجاف يسبب تشققاً سريعاً.');
+  }
+  if (code >= 45 && c.visibilityKm <= 3) {
+    items.push('كمامة للوجه لحماية من الغبار أو الرذاذ المتطاير مع الرياح.');
+  }
+
+  return items;
+}
+
+// ---------- 5. 调用 helpers 得到今天的建议 ----------
+let phrase = '';
+let riskAlerts: string[] = [];
+let outfitAdvice: string[] = [];
+let playPlan: string[] = [];
+let carryItems: string[] = [];
+let humidityHuman = ''; // 人话：干燥 / 适中 / 潮湿闷热（绝不写"湿度 X%"）
+let windHuman = '';     // 人话：微风 / 中等 / 强风（绝不写"km/h"单位值除了小字次要位置）
+let uvHuman = '';       // 人话：弱 / 中 / 强
+
+if (weather.ok) {
+  const c = weather.current;
+  const today = weather.daily[0];
+  phrase = wmoPhrase(c.tempC, c.precipProbNow);
+  const delta = today ? (today.tempMaxC - today.tempMinC) : 0;
+
+  riskAlerts = buildRiskAlerts(c, today);
+  outfitAdvice = buildOutfitAdvice(c, delta);
+  playPlan = buildPlayPlan(c);
+  carryItems = buildCarryItems(c);
+
+  // 人话转换（仅用于模板层）
+  if (c.humidity >= 70) humidityHuman = c.tempC >= 30 ? 'جو لزج ورطب' : 'جو رطب';
+  else if (c.humidity <= 25) humidityHuman = 'جو جاف جداً';
+  else humidityHuman = 'رطوبة معتدلة';
+
+  if (c.windKph <= 12) windHuman = 'هواء هادئ';
+  else if (c.windKph <= 28) windHuman = 'نسيم متوسط';
+  else if (c.windKph <= 40) windHuman = 'رياح نشطة';
+  else windHuman = 'رياح قوية جداً';
+
+  if (c.uvNow <= 2) uvHuman = 'أشعة معتدلة';
+  else if (c.uvNow <= 5) uvHuman = 'أشعة قادوة';
+  else if (c.uvNow <= 8) uvHuman = 'أشعة شديدة';
+  else uvHuman = 'أشعة قوية جداً تجنّب الشمس وقت الظهيرة';
+}
+
+// ---------- 辅助短语（与旧 helper 兼容名：weatherPhrase） ----------
+function weatherPhrase(t: number, p: number) {
+  if (p >= 60) return 'فرصة مطر';
+  if (p >= 30) return 'غيوم متفرقة مع احتمال مطر بسيط';
+  if (t >= 40) return 'حار جداً';
+  if (t >= 33) return 'حار';
+  if (t >= 26) return 'لطيف دافئ';
+  if (t >= 18) return 'لطيف';
+  if (t >= 12) return 'بارد بسيط';
+  return 'بارد';
+}
+const wmoPhrase = weatherPhrase;
+---
+
+<section id="weather" class="section bg-[#fffdf7]">
+  <div class="shell">
+    <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+      <div>
+        <span class="kicker">حالة الجو الآن والقادم</span>
+        <h2 class="section-title">ما الذي تحتاجه قبل أن تخرج إلى المنتزه؟</h2>
+      </div>
+      <p class="max-w-lg text-sm leading-7 text-[#61716a]">
+        هذه التوصيات مبنية على الحالة المتاحة وقت عرض الصفحة. قد يختلاف التفصيل داخل المنتزه من مكان لآخر، فالالتزام بتعليمات إدارة المنتزه عند الوصول أولى دائماً.
+      </p>
+    </div>
+
+    {weather.ok ? (
+      <div class="mt-8 grid gap-5 lg:grid-cols-[1.1fr_1.6fr]">
+        {/* ---------------- 左：实时卡 + 4 区块动态建议 ---------------- */}
+        <article class="flex flex-col gap-5 overflow-hidden rounded-[30px] border border-[#0b201a]/10 bg-white p-7 shadow-[var(--shadow)]">
+          {/* 1) 实时基本数据 */}
+          <div>
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-bold text-[#1d6b56]">الآن في حي الملز — منتزه الملك عبدالله</p>
+                <div class="mt-3 flex items-baseline gap-3">
+                  <p class="text-[clamp(3rem,10vw,5.2rem)] font-black leading-none tracking-tight text-[#071713]">
+                    {weather.current.tempC}°
+                  </p>
+                  <p class="text-sm text-[#61716a]">
+                    تشعر وكأنها <strong class="text-[#071713]">{weather.current.apparentC}°</strong>
+                  </p>
+                </div>
+                <p class="mt-4 text-lg font-bold text-[#0b201a]">{phrase}</p>
+                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-[#48584f]">
+                  <span>💧 {humidityHuman}</span>
+                  <span>🌬️ {windHuman} <span class="text-[#61716a]/80">(≈ {weather.current.windKph} ك.م/ساعة)</span></span>
+                  <span>☀️ {uvHuman}</span>
+                  {weather.current.visibilityKm <= 4 ? (<span>👁️ رؤية محدودة ({weather.current.visibilityKm} ك.م)</span>) : null}
+                  {weather.current.precipProbNow > 0 ? (<span>☔ احتمال المطر {weather.current.precipProbNow}%</span>) : null}
+                  {rainIntensityLabel(weather.current.code, weather.current.precipProbNow) ? (<span class="font-bold text-[#1d4ed8]">{rainIntensityLabel(weather.current.code, weather.current.precipProbNow)}</span>) : null}
+                </div>
+              </div>
+              <span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-[#f7f1e5] text-5xl" aria-label={phrase}>
+                {wmoIcon(weather.current.code, weather.current.precipProbNow)}
+              </span>
+            </div>
+          </div>
+
+          {/* 2) 风险预警（置顶红框，数组空→整段不渲染） */}
+          {riskAlerts.length > 0 && (
+            <div class="rounded-2xl border-2 border-[#b91c1c]/40 bg-[#fef2f2] p-5">
+              <p class="text-sm font-black tracking-wide text-[#7f1d1d]">⚠️ تنبيهات لحظية للسلامة</p>
+              <ul class="mt-3 space-y-2 pr-5 text-sm leading-7 text-[#450a0a]">
+                {riskAlerts.map((line) => <li class="list-disc">{line}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {/* 3) 出行穿搭（空→不渲染） */}
+          {outfitAdvice.length > 0 && (
+            <div class="rounded-2xl border border-[#1d6b56]/15 bg-[#f1f8f4] p-5">
+              <p class="text-sm font-black tracking-wide text-[#154d3f]">✅ ألبسة وملابس الخروج المقترحة</p>
+              <ul class="mt-3 space-y-2 pr-5 text-sm leading-7 text-[#1b3a31]">
+                {outfitAdvice.map((line) => <li class="list-disc">{line}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {/* 4) 游玩安排（空→不渲染，KAP 专属场景） */}
+          {playPlan.length > 0 && (
+            <div class="rounded-2xl border border-[#0369a1]/15 bg-[#eff6ff] p-5">
+              <p class="text-sm font-black tracking-wide text-[#075985]">🗺️ اقتراحات الجولة داخل منتزه الملك عبدالله</p>
+              <ul class="mt-3 space-y-2 pr-5 text-sm leading-7 text-[#0c2e42]">
+                {playPlan.map((line) => <li class="list-disc">{line}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {/* 5) 随身物品（空→不渲染） */}
+          {carryItems.length > 0 && (
+            <div class="rounded-2xl border border-[#92400e]/15 bg-[#fff8ec] p-5">
+              <p class="text-sm font-black tracking-wide text-[#78350f]">🎒 ما يفضّل أخذه معك اليوم</p>
+              <ul class="mt-3 space-y-2 pr-5 text-sm leading-7 text-[#422006]">
+                {carryItems.map((line) => <li class="list-disc">{line}</li>)}
+              </ul>
+            </div>
+          )}
+        </article>
+
+        {/* ---------------- 右：7 日预报 ---------------- */}
+        <article class="rounded-[30px] border border-[#0b201a]/10 bg-white p-7 shadow-[var(--shadow)]">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <p class="text-xs font-bold text-[#1d6b56]">توقعات الأيام القادمة (سبعة أيام)</p>
+              <p class="mt-2 text-sm leading-6 text-[#61716a]">الدرجات المئوية للأعلى والأدنى، ونسبة المطر الأكثر احتمالاً خلال اليوم، ومتوسط سطوع أشعة الشمس القادوة.</p>
+            </div>
+          </div>
+          <ul class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
+            {weather.daily.map((d) => (
+              <li
+                class="flex flex-col items-start gap-2 rounded-2xl border border-[#0b201a]/8 bg-[#fffdf7] p-4 text-sm transition hover:border-[#1d6b56]/40 hover:bg-[#f7faf9]"
+                aria-label={d.dayName + ' ' + d.dayDate + ': ' + wmoLabel(d.code, d.precipProbMax) + '، أعلى ' + d.tempMaxC + ' درجة، وأدنى ' + d.tempMinC + ' درجة.'}
+              >
+                <div class="flex w-full items-center justify-between gap-2">
+                  <p class="font-bold text-[#071713]">{d.dayName}</p>
+                  <span aria-hidden="true">{wmoIcon(d.code, d.precipProbMax)}</span>
+                </div>
+                <p class="text-xs text-[#61716a]">{d.dayDate}</p>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span class="text-lg font-black text-[#b91c1c]">{d.tempMaxC}°</span>
+                  <span class="text-xs text-[#48584f]">/ {d.tempMinC}°</span>
+                </div>
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-[#61716a]">
+                  {d.precipProbMax >= 20 ? (
+                    <span class="font-bold text-[#2563eb]">💧 {d.precipProbMax}%</span>
+                  ) : (
+                    <span>☀️ {d.sunshineHrs} س</span>
+                  )}
+                  {d.uvMax >= 5 ? <span class="font-bold text-[#b45309]">🔥 UV عالي</span> : null}
+                  {d.windMaxKph >= 30 ? <span class="font-bold text-[#0369a1]">🌬️ رياح</span> : null}
+                </div>
+                <p class="text-[12px] leading-5 text-[#61716a]">{wmoLabel(d.code, d.precipProbMax)}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-6 border-t border-[#0b201a]/8 pt-4 text-xs leading-6 text-[#61716a]">
+            الملاحظات تُقدَّم لمنتزه الملك عبدالله ومنطقة حي الملز فقط. جدول العروض والنوافذ والمطاعم يخضع لتغييرات إدارة المنتزه، فالتحقق عند المدخل أفضل دائماً.
+          </p>
+        </article>
+      </div>
+    ) : (
+      <div class="mt-8 rounded-[30px] border border-[#0b201a]/10 bg-white p-7 shadow-[var(--shadow)]">
+        <p class="text-lg font-bold text-[#071713]">البيانات الحالية غير متاحة الآن.</p>
+        <p class="mt-2 text-sm leading-7 text-[#61716a]">
+          يُفضّل الرجوع إلى الأرصاد الرسمية قبل التوجه، والالتزام بالنصائح العامة للفترة: ملابس خفيفة وقطنية في الصيف، وسترة خفيفة في الشتاء، وماء كافٍ دائماً. عند وصولك للمنتزه راقب لوحات الإرشاد الرسمية وقواعد الدخول.
+        </p>
+      </div>
+    )}
+  </div>
+</section>

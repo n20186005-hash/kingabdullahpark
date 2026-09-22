@@ -8,9 +8,20 @@ interface Props {
   description: string;
   path?: string;
   image?: string;
+  imageAlt?: string;
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
-const { title, description, path = Astro.url.pathname, image = '/og-cover.svg', jsonLd } = Astro.props;
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  image = '/og-cover.svg',
+  imageAlt,
+  jsonLd,
+} = Astro.props;
+const defaultImageAlt = title.includes('الرياض')
+  ? 'منتزه الملك عبدالله في مدينة الرياض'
+  : title;
 const absoluteUrl = Astro.site ? new URL(path, Astro.site).href : undefined;
 const absoluteImage = Astro.site ? new URL(image, Astro.site).href : undefined;
 ---
@@ -34,7 +45,14 @@ const absoluteImage = Astro.site ? new URL(image, Astro.site).href : undefined;
     <meta property="og:description" content={description} />
     {absoluteUrl && <meta property="og:url" content={absoluteUrl} />}
     {absoluteImage && <meta property="og:image" content={absoluteImage} />}
+    {absoluteImage && <meta property="og:image:alt" content={imageAlt || defaultImageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="King Abdullah Park" />
+    <meta name="application-name" content="King Abdullah Park Guide" />
+    <meta name="mobile-web-app-capable" content="yes" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <script is:inline>
       (() => {

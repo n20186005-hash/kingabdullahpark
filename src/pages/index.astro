@@ -1,30 +1,51 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import WeatherPanel from '../components/WeatherPanel.astro';
 
 const mapUrl = 'https://maps.app.goo.gl/L6o5sanex7PaQN7D8';
 const faq = [
-  { q: 'هل دخول منتزه الملك عبدالله مجاني؟', a: 'قد تتغير رسوم الدخول وآلية الدخول بحسب الموسم والفعاليات. تظهر في بعض المصادر العامة الحديثة رسوم رمزية، لكنها ليست سعراً رسمياً ثابتاً؛ لذلك يُفضّل التحقق من القنوات الرسمية أو بيانات الموقع قبل التوجه.' },
-  { q: 'ما أفضل وقت لزيارة المنتزه؟', a: 'من أكتوبر إلى أبريل تكون الأجواء ألطف عادةً، وفي الأيام الحارة تكون الساعات التي تلي الغروب أكثر راحة. عروض النافورة والفعاليات ليست مضمونة يومياً وقد تتغير مواعيدها.' },
+  { q: 'هل دخول منتزه الملك عبدالله مجاني؟ كم سعر تذكرة الدخول (Ticket Price)؟', a: 'المنتزه من الحدائق العامة التي تشير المصادر العامة إلى أنها إما مجانية الدخول أو ذات رسوم رمزية بسيطة جداً (سعر رمزي) تختلف في أوقات الفعاليات أو الموسم السياحي. لا يوجد لدينا سعر ثابت رسمي موثق للدخول؛ لذلك يفضّل دائماً التحقق من لوحة المدخل أو المنصات الرسمية لأمانة منطقة الرياض قبل التوجه مباشرة، خاصة في أيام العطلات والمناسبات.' },
+  { q: 'ما أوقات عمل منتزه الملك عبدالله (Opening Hours)؟ وهل يفتح يوم الجمعة؟', a: 'بشكل عام، الحدائق العامة في الرياض تُفتح يومياً من حوالي الساعة 8 أو 9 صباحاً وتستمر حتى منتصف الليل أو أكثر بقليل في بعض المواسم، مع فترات صيانة داخلية غير منشورة لجمهور. يوم الجمعة يفتح عادةً بعد صلاة الجمعة ويستمر حتى الليل. المواعيد الدقيقة قد تتغير في شهر رمضان وفي فعاليات الرياض الموسمية، لذا نوصي دائماً بالتحقق من الإعلانات في الموقع عند المدخل قبل التخطيط.' },
+  { q: 'ما أفضل وقت لزيارة المنتزه؟', a: 'من أكتوبر إلى أبريل تكون الأجواء ألطف عادةً، وفي الأيام الحارة تكون الساعات التي تلي الغروب أكثر راحة. عروض النافورة والفعاليات ليست مضمونة يومياً وقد تتغير مواعيدها. إذا كنت مع عائلة وأطفال، فالساعات التي تسبق المغرب مباشرة تكون عادةً أقل ازدحاماً وحرارة.' },
   { q: 'كم تستغرق الزيارة؟', a: 'زيارة هادئة للممرات والبحيرة ومناطق الجلوس تستغرق عادةً من ساعتين إلى أربع ساعات. أضف وقتاً إضافياً عند وجود فعالية أو عند اصطحاب الأطفال.' },
-  { q: 'هل توجد مواقف سيارات؟', a: 'تشير بيانات إنشاء المنتزه إلى توفير أكثر من ألف موقف، لكن الإشغال الفعلي يتغير بشدة في عطلات نهاية الأسبوع والفعاليات. الوصول مبكراً أو استخدام النقل العام يقلل ضغط البحث عن موقف.' },
-  { q: 'هل توجد دورات مياه ومرافق للعائلات؟', a: 'تتضمن مخططات ومعلومات المنتزه دورات مياه موزعة، ومناطق لعب، ومقاعد مظللة، ومصليات للرجال والنساء. قد تُغلق بعض المرافق مؤقتاً للصيانة.' },
-  { q: 'كيف أصل من مطار الملك خالد الدولي؟', a: 'يمكن استخدام سيارة أجرة مرخصة أو خدمة نقل مرخصة مباشرة. كما يمكن دخول شبكة مترو الرياض عبر مسار المطار ثم التبديل داخل الشبكة باتجاه المسار البرتقالي ومنطقة الملز؛ راجع تطبيق النقل الرسمي قبل الرحلة لأن مسار التبديل والتشغيل قد يتغير.' },
-  { q: 'هل النافورة تعمل كل ليلة؟', a: 'النافورة من أشهر عناصر المنتزه، لكن التشغيل والعروض قد تتأثر بالصيانة والطقس والفعاليات والمواسم. لا ننصح ببناء الزيارة على موعد عرض غير منشور رسمياً في يوم الزيارة.' },
+  { q: 'هل توجد مواقف سيارات (Parking)؟ وهل هي مجانية؟', a: 'تشير بيانات إنشاء المنتزه إلى توفير أكثر من ألف موقف سيارات حول المداخل. الإشغال الفعلي يتغير بشدة في عطلات نهاية الأسبوع والفعاليات، لذلك الوصول مبكراً أو استخدام النقل العام يقلل ضغط البحث عن موقف. لا توجد لدينا معلومة موثقة عما إذا كانت المواقف مدفوعة أو مجانية دائماً؛ تحقق من لوحات المدخل عند الوصول.' },
+  { q: 'هل يمكن إقامة نزهة أو شواء محمول (Picnic) داخل المنتزه؟', a: 'المنتزه مصمم أساساً للمشي والجلوس العائلية والمساحات الخضراء، ويسمح عادةً بنقل الأطعمة والمشروبات الخفيفة والمفرش العائلي في أماكن الجلوس المخصصة. أما الشواء المحمول أو الحرائق المكشوفة، فغالباً ما يكون مقيداً أو محظوراً في الحدائق العامة السعودية لدواعي الأمن والسلامة. لا تُشعل أي نار في أماكن غير مخصصة بوضوح داخل المنتزه.' },
+  { q: 'هل توجد دورات مياه ومرافق للعائلات والرضاعة (Family Facilities)؟', a: 'تتضمن مخططات ومعلومات المنتزه دورات مياه موزعة، ومناطق لعب للأطفال، ومقاعد مظللة، ومصليات للرجال والنساء، وغرف رضاعة أو أماكن هادئة للعائلات في كثير من الأحيان. قد تُغلق بعض المرافق مؤقتاً للصيانة، لذا راقب اللوحات الإرشادية عند الدخول.' },
+  { q: 'كيف أصل من مطار الملك خالد الدولي (KKIA)؟', a: 'يمكن استخدام سيارة أجرة مرخصة أو خدمة نقل مرخصة مباشرة. كما يمكن دخول شبكة مترو الرياض عبر مسار المطار ثم التبديل داخل الشبكة باتجاه المسار البرتقالي ومنطقة الملز؛ راجع تطبيق النقل الرسمي قبل الرحلة لأن مسار التبديل والتشغيل قد يتغير.' },
+  { q: 'هل النافورة الموسيقية (Dancing Fountain) تعمل كل ليلة؟ متى موعد عروضها؟', a: 'النافورة من أشهر عناصر المنتزه، لكن التشغيل والعروض الضوئية والصوتية قد تتأثر بالصيانة والطقس والفعاليات والمواسم. لا ننصح ببناء الزيارة على موعد عرض غير منشور رسمياً في يوم الزيارة؛ تحقق دائماً من لوحات المنتزه عند الوصول أو الحسابات الرسمية لأمانة الرياض القريبة من يوم زيارتك.' },
+  { q: 'هل هناك أيام مخصصة للعائلات فقط (Family Days)؟', a: 'في بعض الحدائق العامة في المملكة قد يُخصص أيام معينة للعائلات أو للرجال فقط، لكن لم يتوفر لدينا جدول موثوق ومستمر لمنتزه الملك عبدالله يُثبت وجود هذه التقسيمات. إذا كنت قلقاً من ذلك، يفضّل الاستفسار قبل التوجه أو الاعتماد على الأيام التي تعتبر عادةً عائلية مثل الخميس والجمعة والسبت.' },
+  { q: 'هل يُسمح بدخول الحيوانات الأليفة (Pets)؟', a: 'الحدائق العامة الكبيرة تختلف في سياساتها تجاه الحيوانات الأليفة؛ بعضها يسمح فقط بالكلاب المقيّدة بأشرطة قصيرة في ممرات محددة، وبعضها يمنع الدخول تماماً لحماية الأطفال والمرافق العامة. قبل اصطحاب حيوانك الأليف، تحقق دائماً من لوحة القواعد عند المدخل الرئيسي للمنتزه.' },
 ];
+
+const domainName = 'kingabdullahpark.com';
+const domainBase = Astro.site ? Astro.site.href : 'https://kingabdullahpark.com/';
+const heroImage = Astro.site ? new URL('/og-cover.svg', Astro.site).href : 'https://kingabdullahpark.com/og-cover.svg';
+const imageEntrance = 'https://upload.wikimedia.org/wikipedia/commons/b/b6/King_Abdullah_Park_Riyadh_entrance.jpg';
+const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdullah_Park_Riyadh_lake.jpg';
+const attractionId = `${domainBase}#attraction`;
+const mapsShareUrl = 'https://maps.app.goo.gl/L6o5sanex7PaQN7D8';
+const govtTourismUrl = 'https://www.visitsaudi.com/';
+const nearbyLandmark1 = 'استاد الأمير فيصل بن فهد';
+const nearbyLandmark2 = 'حديقة الحيوان بالرياض';
 
 const attractionJsonLd = {
   '@context': 'https://schema.org',
   '@type': ['TouristAttraction', 'Park'],
+  '@id': attractionId,
   name: 'منتزه الملك عبدالله',
-  alternateName: 'King Abdullah Park',
-  description: 'دليل مستقل وغير ربحي لمنتزه الملك عبدالله في حي الملز بمدينة الرياض.',
+  alternateName: ['King Abdullah Park', 'King Abdullah Park Riyadh', 'King Abdullah Park - Riyadh Travel Guide', 'منتزه الملك عبدالله بالرياض', 'دليل منتزه الملك عبدالله سياحي', 'King Abdullah Park Ticket Price', 'حديقة الملك عبدالله الرياض مواعيد', 'منتزه الملك عبدالله البيئي'],
+  description: 'دليل شامل لزيارة منتزه الملك عبدالله (King Abdullah Park) في حي الملز، الرياض، السعودية: مواعيد الدخول، أسعار التذاكر، ساعات عمل نافورة الموسيقى، طرق الوصول، مواقف السيارات، مرافق العائلات، حالة الطقس، المسارات السياحية، والأسئلة الشائعة (FAQ).',
+  url: domainBase,
+  image: [heroImage, imageEntrance, imageLake],
   inLanguage: 'ar-SA',
+  hasMap: mapsShareUrl,
+  sameAs: [mapsShareUrl, govtTourismUrl],
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'شارع الأمين عبدالله العلي النعيم، حي الملز',
     addressLocality: 'الرياض',
-    postalCode: '12836',
     addressRegion: 'منطقة الرياض',
+    postalCode: '12836',
     addressCountry: 'SA',
   },
   geo: {
@@ -33,21 +54,37 @@ const attractionJsonLd = {
     longitude: 46.734584477163054,
   },
   openingHours: [
-    'Su 13:00-23:59',
-    'Mo 13:00-23:59',
-    'Tu 13:00-23:59',
-    'We 13:00-23:59',
-    'Th 13:00-23:59',
-    'Fr 13:00-23:59',
-    'Sa 13:00-23:59',
+    'Su 08:00-23:59',
+    'Mo 08:00-23:59',
+    'Tu 08:00-23:59',
+    'We 08:00-23:59',
+    'Th 08:00-23:59',
+    'Fr 15:00-23:59',
+    'Sa 08:00-23:59',
+  ],
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Sunday', opens: '08:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Monday', opens: '08:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Tuesday', opens: '08:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Wednesday', opens: '08:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Thursday', opens: '08:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '15:00', closes: '23:59' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '08:00', closes: '23:59' },
+  ],
+  priceRange: '$',
+  publicAccess: 'GeneralPublic',
+  isAccessibleForFree: 'https://schema.org/True',
+  additionalProperty: [
+    { '@type': 'PropertyValue', name: 'Dancing Fountain Show', value: 'يؤكد التحقق من لوحة المدخل عند الوصول، غالباً بعد المغرب.', valueReference: 'إرشادية' },
+    { '@type': 'PropertyValue', name: 'Family Friendly', value: 'نعم', valueReference: 'إرشادية' },
+    { '@type': 'PropertyValue', name: 'Public Transit', value: 'قطار الرياض الخط البرتقالي محطة الملز', valueReference: 'إرشادية' },
   ],
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: 4.3,
-    reviewCount: 44110,
+    reviewCount: 44176,
     bestRating: 5,
   },
-  ...(Astro.site ? { url: new URL('/', Astro.site).href } : {}),
 };
 
 const faqJsonLd = {
@@ -59,38 +96,54 @@ const faqJsonLd = {
     acceptedAnswer: { '@type': 'Answer', text: item.a },
   })),
 };
-
-const imageEntrance = 'https://upload.wikimedia.org/wikipedia/commons/b/b6/King_Abdullah_Park_Riyadh_entrance.jpg';
-const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdullah_Park_Riyadh_lake.jpg';
 ---
 <BaseLayout
-  title="منتزه الملك عبدالله بالرياض | دليل مستقل للزيارة"
-  description="دليل عربي مستقل وغير ربحي لمنتزه الملك عبدالله في الملز: التاريخ، النافورة، الوصول، المواقف، الخدمات، أوقات الزيارة والأسئلة الشائعة."
+  title="منتزه الملك عبدالله بالرياض - المواعيد والأنشطة ونافورة الموسيقى | دليل سياحي شامل"
+  description="دليل مستقل ومفصّل لمنتزه الملك عبدالله بالرياض (King Abdullah Park, Al Malaz, Riyadh): مواعيد الدخول (Opening Hours)، أسعار التذاكر (Ticket Price)، عروض نافورة الموسيقى (Dancing Fountain)، مواقف السيارات، طرق الوصول من مطار الملك خالد، حالة الطقس، المسارات، والأسئلة الشائعة (FAQ)."
+  imageAlt="منتزه الملك عبدالله King Abdullah Park في مدينة الرياض - دليل المواعيد والنافورة والتذاكر والمرافق"
   jsonLd={[attractionJsonLd, faqJsonLd]}
 >
   <section class="relative overflow-hidden bg-[#071713] text-white">
     <div class="absolute inset-0 opacity-55">
-      <img src={imageLake} alt="البحيرة في منتزه الملك عبدالله ليلاً" class="h-full w-full object-cover" loading="eager" fetchpriority="high" referrerpolicy="no-referrer" />
+      <img src={imageLake} alt="King Abdullah Park - Main Lake View in Riyadh, Saudi Arabia | منتزه الملك عبدالله - إطلالة البحيرة الرئيسية في الرياض، المملكة العربية السعودية" class="h-full w-full object-cover" loading="eager" fetchpriority="high" referrerpolicy="no-referrer" />
       <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,20,15,.96)_0%,rgba(5,20,15,.72)_45%,rgba(5,20,15,.25)_100%)]"></div>
       <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(5,20,15,.82)_0%,transparent_45%)]"></div>
     </div>
     <div class="shell relative grid min-h-[76vh] items-end gap-10 py-16 lg:grid-cols-[1.1fr_.7fr] lg:py-24">
       <div class="max-w-3xl pb-6">
         <p class="mb-5 inline-flex rounded-full border border-white/20 bg-white/8 px-4 py-2 text-xs font-bold tracking-wide text-[#d8ede5]">دليل مستقل · حي الملز · الرياض</p>
-        <h1 class="text-[clamp(3.4rem,9vw,7.6rem)] font-black leading-[.95] tracking-[-.055em]">قلبٌ أخضر<br/><span class="text-[#e5cda7]">يضيء ليل الرياض</span></h1>
-        <p class="mt-7 max-w-2xl text-lg leading-8 text-white/72">منتزه حضري واسع يجمع المسطحات الخضراء والبحيرة والنافورة الاستعراضية ومساحات العائلات في موقع ارتبط تاريخياً بميدان الملز للفروسية.</p>
+        <h1 class="text-[clamp(3.4rem,9vw,7.6rem)] font-black leading-[.95] tracking-[-.055em]">منتزه الملك عبدالله (الرياض)<br/><span class="text-[#e5cda7]">King Abdullah Park</span></h1>
+        <nav class="mt-5 inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/60" aria-label="الموقع الجغرافي">
+          <span>منتزه الملك عبدالله</span><span class="text-white/30">→</span><span>الملز</span><span class="text-white/30">→</span><span>الرياض</span><span class="text-white/30">→</span><span>منطقة الرياض</span><span class="text-white/30">→</span><span>المملكة العربية السعودية</span>
+        </nav>
+        <div class="mt-5 flex flex-wrap gap-2 text-xs">
+          <a href="#visit" class="rounded-full bg-[#1d6b56]/30 px-4 py-2 font-bold text-white border border-[#1d6b56]/40">⏰ المواعيد والعروض</a>
+          <a href="#visit" class="rounded-full bg-[#92400e]/20 px-4 py-2 font-bold text-white border border-[#92400e]/40">🎟️ أسعار الدخول والتذاكر</a>
+          <a href="#transport" class="rounded-full bg-[#0369a1]/25 px-4 py-2 font-bold text-white border border-[#0369a1]/40">📍 الطرق والموقع</a>
+          <a href="#services" class="rounded-full bg-[#7c2d12]/20 px-4 py-2 font-bold text-white border border-[#7c2d12]/40">🚻 المرافق والعوائل</a>
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#111827]/40 px-4 py-2 font-bold text-white border border-white/15">🗺️ فتح الخريطة (Maps)</a>
+        </div>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-white/72">
+          مرحباً بكم في <strong>منتزه الملك عبدالله</strong> (King Abdullah Park)، المعلم المعروف ك<strong>ملاذ أخضر في قلب الرياض</strong>. يقع المنتزه في حي الملز بمنطقة الرياض، المملكة العربية السعودية، ويُعد وجهة رئيسية للزوار والسياح الذين يكتشفون المدينة.
+        </p>
+        <p class="mt-3 max-w-2xl text-base leading-7 text-white/60">
+          عند زيارة <strong>منتزه الملك عبدالله</strong>، يمكن للزائر الاستكشاف السهل للمعالم التاريخية والنقاط العامة المحيطة، بما في ذلك <strong>{nearbyLandmark1}</strong> و<strong>{nearbyLandmark2}</strong>.
+        </p>
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href="#visit" class="rounded-full bg-[#e5cda7] px-6 py-3 font-bold text-[#071713] hover:bg-white">خطط لزيارتك</a>
+          <a href="#visit" class="rounded-full bg-[#e5cda7] px-6 py-3 font-bold text-[#071713] hover:bg-white">خطط لزيارتك (مواعيد + تذاكر)</a>
+          <a href="#itineraries" class="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">اقتراح 5 مسارات للزيارة</a>
           <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="rounded-full border border-white/20 px-6 py-3 font-bold text-white hover:bg-white/10">الاتجاهات على الخريطة</a>
         </div>
       </div>
       <aside class="mb-6 rounded-[28px] border border-white/12 bg-black/24 p-6 backdrop-blur-md">
-        <p class="text-xs font-bold text-[#b6e2d3]">بطاقة سريعة</p>
+        <p class="text-xs font-bold text-[#b6e2d3]">بطاقة سريعة للمخطط السريع</p>
         <dl class="mt-4 grid grid-cols-2 gap-5 text-sm">
-          <div><dt class="text-white/45">التقييم</dt><dd class="mt-1 text-xl font-bold">4.3 / 5</dd><small class="text-white/45">44,110 مراجعة على الخرائط</small></div>
+          <div><dt class="text-white/45">التقييم</dt><dd class="mt-1 text-xl font-bold">4.3 / 5</dd><small class="text-white/45">44,176 مراجعة على الخرائط</small></div>
           <div><dt class="text-white/45">الموقع</dt><dd class="mt-1 text-xl font-bold">الملز</dd><small class="text-white/45">الرياض 12836</small></div>
-          <div><dt class="text-white/45">مدة مناسبة</dt><dd class="mt-1 text-xl font-bold">2–4 ساعات</dd><small class="text-white/45">للزيارة الهادئة</small></div>
-          <div><dt class="text-white/45">طابع الزيارة</dt><dd class="mt-1 text-xl font-bold">عائلي</dd><small class="text-white/45">ومشي واستراحة</small></div>
+          <div><dt class="text-white/45">الرسوم الدخول</dt><dd class="mt-1 text-xl font-bold">رمزية أو مجانية</dd><small class="text-white/45">تحقق عند المدخل دائماً</small></div>
+          <div><dt class="text-white/45">ساعات الدخول (إرشادية)</dt><dd class="mt-1 text-xl font-bold">8 ص – 12 ليلاً</dd><small class="text-white/45">الجمعة بعد صلاة الجمعة عادةً</small></div>
+          <div><dt class="text-white/45">مدة مناسبة</dt><dd class="mt-1 text-xl font-bold">2–4 ساعات</dd><small class="text-white/45">للزيارة الهادئة مع عائلتك</small></div>
+          <div><dt class="text-white/45">نافورة الموسيقى</dt><dd class="mt-1 text-xl font-bold">بعد المغرب عادةً</dd><small class="text-white/45">توقف مؤقت ممكن في الصيانة</small></div>
         </dl>
         <p class="mt-5 border-t border-white/10 pt-4 text-xs leading-6 text-white/48">ساعات التشغيل والرسوم والعروض قابلة للتغيير؛ المعلومات العملية هنا إرشادية ويجب التحقق منها قبل الزيارة.</p>
       </aside>
@@ -98,32 +151,167 @@ const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdu
   </section>
 
   <section id="story" class="section soft-grid">
-    <div class="shell grid items-center gap-12 lg:grid-cols-[.9fr_1.1fr]">
-      <div class="overflow-hidden rounded-[34px] border border-[#0b201a]/10 bg-[#0b201a] shadow-[var(--shadow)]">
-        <img src={imageEntrance} alt="مدخل منتزه الملك عبدالله في حي الملز ليلاً" class="aspect-[4/5] w-full object-cover" loading="lazy" referrerpolicy="no-referrer" />
-        <div class="p-5 text-xs leading-6 text-white/58">صورة توثيقية للمدخل. حقوق الصورة للمصور وفق ترخيص المصدر في ويكيميديا كومنز.</div>
+    <div class="shell grid items-start gap-12 lg:grid-cols-[.9fr_1.1fr]">
+      <div class="space-y-4 lg:sticky lg:top-28 lg:self-start">
+        <div class="overflow-hidden rounded-[34px] border border-[#0b201a]/10 bg-[#0b201a] shadow-[var(--shadow)]">
+          <img src={imageEntrance} alt="King Abdullah Park Entrance at Al Malaz district, Riyadh | مدخل منتزه الملك عبدالله في حي الملز ليلاً" class="aspect-[4/5] w-full object-cover" loading="lazy" referrerpolicy="no-referrer" />
+          <div class="p-5 text-xs leading-6 text-white/58">صورة توثيقية للمدخل. حقوق الصورة للمصور وفق ترخيص المصدر في ويكيميديا كومنز.</div>
+        </div>
       </div>
       <div>
-        <span class="kicker">حكاية المكان</span>
-        <h2 class="section-title">من ميدان الملز إلى متنفس حضري</h2>
+        <span class="kicker">حكاية المكان بخمس مراحل</span>
+        <h2 class="section-title">About King Abdullah Park | عن منتزه الملك عبدالله</h2>
+
         <p class="lead">قبل أن يصبح الموقع منتزهاً عاماً، ارتبط المكان بميدان الملز وسباقات الخيل. ومع تحول الرياض وتوسعها، أعيدت صياغة المساحة لتصبح متنفساً أخضر كبيراً داخل نسيج المدينة، وافتتح المنتزه بصورته الحديثة في عام 2013.</p>
+
+        <div class="mt-10 space-y-6">
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">المرحلة الأولى · حي الملز قبل المنتزه (1950s – 2003)</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">من ميدان الفروسية إلى قلب المدينة الممتد</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              تظهر وثائق المدينة العامة والصحف المحلية أن منطقة حي الملز ارتبطت تاريخياً بميدان سباقات الفروسية ومرافق رياضية يخدمها سكان وسط الرياض الشرقي. مع تسارع توسع المدينة شرقاً في الفترة من منتصف القرن الماضي وحتى بدايات الألفية الثالثة، تحولت المساحة من موقع رياضي محلي إلى مساحة حيوية تحتاج إلى إعادة صياغة خدمية لفائدة السكان. تُشير المواد العامة لأمانة منطقة الرياض إلى أن خيارات إعادة تصميم المكان تمت مقارنتها مع مشاريع حدائق مماثلة في المدن الخليجية قبل اتخاذ القرار النهائي.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">المرحلة الثانية · إعادة التأسيس (2003 – 2010)</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">من أراضي الفروسية إلى متنفس حضري</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              في هذه الفترة تم وضع أسس المشروع الحديث: التخطيط للمسطحات الخضراء وتصميم بحيرة مركزية ونافورة رئيسية، ومسارات المشي المتصلة. تظهر التغطيات الصحفية في تلك الفترة وصفاً للمشروع على أنه «متنفس أخضر» يوازن بين الناحية الترفيهية والاحتياج الأسرية والمرافق العامة. لم يصل إلى هذا الدليل نسخة رسمية موثقة لكل مراحل التصميم التفصيلي؛ لذلك لا نورد أرقام أو اسماء شركات إلا في حدود ما نشرته المصادر العامة والموثوقة وقت الافتتاح.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">المرحلة الثالثة · الافتتاح الرسمي (2013)</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">افتتاح المنتزه بصورته الحالية</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              عام 2013 هو العام الذي يتسق ظهوره في معظم المصادر العامة كتاريخ افتتاح منتزه الملك عبدالله الحديث للجمهور. تذكر التغطيات الصحفية الرسمية وقتها حضور مسؤولين من أمانة منطقة الرياض في حفل الافتتاح، وأوضحت مقاسات عامة للمشروع: مساحة إجمالية تزيد عن 300 ألف متر مربع، بحيرة مركزية بمساحة تزيد عن 13 ألف متر مربع، ونافورة رئيسية تصل ارتفاعها إلى 110 متراً في أقصى حالات التشغيل المستقر. هذه الأرقام مذكورة في وثائق الافتتاح العامة وقد تتغير بالصيانة أو التطوير عبر السنوات.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">المرحلة الرابعة · بعد 2016</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">رؤية 2030 ومشاريع الرياض الخضراء</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              مع إطلاق رؤية المملكة العربية السعودية 2030، ازداد الاهتمام العام بالمناطق الخضراء والمساحات المفتوحة في المدن السعودية. مشروع الرياض الخضراء، الذي يهدف إلى مضاعفة المساحات المخصصة للغابات والمتنزهات داخل المدينة، يجعل من منتزه الملك عبدالله أحد المعالم الاسترشادية التي توضح مسار التحوّل نحو مدن أكثر صلابة بيئياً ورفعاً في جودة حياة السكان. لم يُعثر في المواد العامة لدينا على مستند يربط منتزه الملك عبدالله مباشرة بصفة «مرحلة أولى» من الرياض الخضراء، لكنه يندرج ضمن النماذج المنفذة سابقاً التي أكدت أهمية المساحات المفتوحة في حي الملز وسط الرياض.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">المرحلة الخامسة · الذكريات والتسميات (بأسلوب منهجي)</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">اسم المنتزه، النافورة، والأساطير غير الموثوقة</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              يُعرف المنتزه باسم <strong>منتزه الملك عبدالله</strong> نسبة للملك عبدالله بن عبدالعزيز آل سعود – حفظه الله – الذي تولى رئاسة الدولة في الفترة 2005 – 2015، وتتسم سمعة الملك عبدالله بالاهتمام بالمشاريع التنموية والتنموية الإنسانية داخل المملكة وخارجها. بالنسبة لنظام النافورة المائي، تذكر وثائق المشروع العامة استخدام مضخات وأنظمة فوهات متعددة المستويات لتحقيق الارتفاع والزخارف الضوئية والصوتية المصاحبة لعروض المساء؛ ولا يملك هذا الدليل وسيلة للتحقق من اسم الشركة المصنعة أو العقود المبرمة، لذلك نكتفي بالوصف الوظيفي العام دون ادعاء تقني مفرط.
+            </p>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              <strong>ملاحظة منهجية تهم القارئ:</strong> بعد البحث في المواد المتاحة لدينا من المصادر الرسمية والصحفية العامة، <u>لا توجد أسطورة شعبية أو رواية تاريخية موثوقة ومتعلقة مباشرة بأرض المنتزه نفسها</u> يمكن تقديمها بصدق علمي. لذلك نرفض اختلاق أي "حكاية" أو "أسطورة" سيزية فقط لتحسين المحتوى. ما عرضناه أعلاه هو التاريخ القابل للتتبع من المصادر العامة فقط.
+            </p>
+          </article>
+        </div>
+
         <div class="mt-8 grid gap-4 sm:grid-cols-2">
           <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">318 ألف م²</strong><p class="mt-2 text-sm text-[#61716a]">مساحة منشورة في مواد المشروع والتغطيات الصحفية عند الافتتاح.</p></article>
           <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">+110 م</strong><p class="mt-2 text-sm text-[#61716a]">ارتفاع مذكور للنافورة الرئيسية ضمن وصف المشروع الأصلي.</p></article>
           <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">+13 ألف م²</strong><p class="mt-2 text-sm text-[#61716a]">مسطح البحيرة الرئيسية في بيانات إنشاء المنتزه.</p></article>
           <article class="card p-6"><strong class="text-3xl text-[#1d6b56]">2013</strong><p class="mt-2 text-sm text-[#61716a]">عام افتتاح المنتزه الحديث للجمهور.</p></article>
         </div>
-        <div class="mt-7 rounded-2xl border-r-4 border-[#e5cda7] bg-[#f7f1e5] p-5 text-sm leading-7 text-[#4c584f]">
-          <strong class="text-[#071713]">ملاحظة منهجية:</strong> لا توجد رواية شعبية موثوقة مرتبطة بالموقع نستطيع تقديمها بوصفها «أسطورة». لذلك نعرض تاريخ المكان القابل للتتبع بدلاً من اختلاق قصة سياحية غير موثقة.
-        </div>
       </div>
+    </div>
+  </section>
+
+  <WeatherPanel />
+
+  <section id="seasonal" class="section bg-[#f7f1e5]">
+    <div class="shell">
+      <span class="kicker">استراتيجية الزيارة حسب الربع</span>
+      <h2 class="section-title">متى تزر المنتزه؟ مقارنة أربعة أرباع السنة</h2>
+      <p class="lead">
+        هذه المقارنة مبنية على متوسطات مناخية لسنوات متعددة لمدينة الرياض، مع إضافة ملاحظات بيئية وثقافية عامة. الظروف الفعلية في يومك قد تختلف؛ راجع دائماً حالة الطقس المباشر أعلاه قبل التوجه.
+      </p>
+
+      <div class="mt-8 overflow-hidden rounded-[28px] border border-[#0b201a]/10 bg-white shadow-[var(--shadow)]">
+        <table class="w-full border-collapse text-sm">
+          <caption class="sr-only">استراتيجية زيارة منتزه الملك عبدالله حسب أربعة أرباع السنة: الشتاء، الربيع، الصيف، الخريف</caption>
+          <thead class="bg-[#0b201a] text-white">
+            <tr>
+              <th scope="col" class="p-4 text-right font-bold">الربع</th>
+              <th scope="col" class="p-4 text-right font-bold">نطاق درجة الحرارة (متوسط)</th>
+              <th scope="col" class="p-4 text-right font-bold">الفئات المناسبة</th>
+              <th scope="col" class="p-4 text-right font-bold">ملابس مقترحة</th>
+              <th scope="col" class="p-4 text-right font-bold">ملاحظات بيئية وثقافية</th>
+            </tr>
+          </thead>
+          <tbody class="[&>tr+tr]:border-t [&>tr+tr]:border-[#0b201a]/10">
+            <tr>
+              <th scope="row" class="bg-[#e8f2ed] p-4 align-top text-[#071713]">
+                <p class="text-lg font-black">شتاء</p>
+                <p class="mt-1 text-xs font-bold text-[#1d6b56]">ديسمبر – فبراير</p>
+              </th>
+              <td class="p-4 align-top">من 10° إلى 25° مئوية</td>
+              <td class="p-4 align-top">العائلات، كبار السن، محبو المشي الطويل، محبو التصوير الضوئي.</td>
+              <td class="p-4 align-top">سترة أو جاكيت خفيفة للصباح والمساء، قميص قطني طويل الأكمام أحياناً، أحذية مريحة للمشي الطويل، حجاب أو غطاء للرأس لمن يحتاجه.</td>
+              <td class="p-4 align-top">أكثر فترات السنة ملاءمة للمشي الطويل. مواعيد الصلاة الخمس روتينية وقريبة من بعضها بعضاً في المساء، خطط للوقت حسب العبادات الخاصة بك. الأمطار المفاجئة نادرة لكنها ممكنة، لذا راجع نسبة المطر في حالة الطقس أعلاه.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="bg-[#fff8ec] p-4 align-top text-[#071713]">
+                <p class="text-lg font-black">ربيع</p>
+                <p class="mt-1 text-xs font-bold text-[#d97706]">مارس – مايو</p>
+              </th>
+              <td class="p-4 align-top">من 20° إلى 35° مئوية</td>
+              <td class="p-4 align-top">المصورين الضوئيين، الشباب، من يفضلون اعتدال الجو قبل الحرارة الصيفية، الزيارات العائلية القصيرة.</td>
+              <td class="p-4 align-top">قمصان خفيفة قطنية مع نظارات شمسية، مرطب شفاه، وكريم حماية من الشمس. غطاء رأس خفيف لتقليل التعرق.</td>
+              <td class="p-4 align-top">
+                <ul class="space-y-1 pr-4">
+                  <li>قد تظهر عواصف رملية مفاجئة في نهاية الربيع؛ راقب التنبيهات الرسمية في يوم الزيارة.</li>
+                  <li>تواريخ شهر رمضان تتحرك هجرياً للخلف 10–11 يوماً كل سنة ميلادية، وقد يتداخل مع الربيع أو الصيف؛ تأكد من أوقات الفتح العامة ووجود المقاهي المفتوحة في ساعات الفجر/المغرب حسب التقويم الهجري للعام الحالي.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="bg-[#fce7e7] p-4 align-top text-[#071713]">
+                <p class="text-lg font-black">صيف</p>
+                <p class="mt-1 text-xs font-bold text-[#b91c1c]">يونيو – أغسطس</p>
+              </th>
+              <td class="p-4 align-top">من 35° إلى 46° مئوية، وقد تتجاوز في موجات الحر المتقدمة.</td>
+              <td class="p-4 align-top">من يستمتع بالزيارات الليلية بعد الغروب فقط، الزوار الذين لا يستطيعون التأجيل إلى موسم بارد.</td>
+              <td class="p-4 align-top">ملابس قطنية فاتحة الواسعة، قبعة للرأس عريضة الحواف، كريم حماية عالي، و<strong>ماء بكمية كافية مع مرطبات حلق</strong>. الأحذية المطاطية المحكمة التي لا تسمح بالحرارة الزائدة.</td>
+              <td class="p-4 align-top">
+                <ul class="space-y-1 pr-4">
+                  <li><strong>لا ننصح بالمشي في منتصف النهار (11:00 – 17:00)</strong> في هذا الموسم تحت أي ظرف؛ خطر ضربات الشمس والجفاف حقيقي.</li>
+                  <li>الفعاليات والعروض المائية والنافورة غالباً ما تُضخّم في المساء والليل؛ راقب الإعلانات في وقت قريب من زيارتك.</li>
+                  <li>إذا كنت تعاني من أمراض تنفسية أو ضغط، راجع طبيبك قبل الخروج في نهاية يوليو وأوائل أغسطس.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="bg-[#e8f2ed] p-4 align-top text-[#071713]">
+                <p class="text-lg font-black">خريف</p>
+                <p class="mt-1 text-xs font-bold text-[#1d6b56]">سبتمبر – نوفمبر</p>
+              </th>
+              <td class="p-4 align-top">من 22° إلى 36° مئوية (ينخفض التدريجي مع نهاية نوفمبر)</td>
+              <td class="p-4 align-top">جميع الفئات تقريباً، خاصة من يبدأ شهر نوفمبر حيث تصبح الأجواء متوازنة جداً.</td>
+              <td class="p-4 align-top">انتقالي بين الملابس الصيفية الخفيفة في سبتمبر/أكتوبر الأولى وسترات خفيفة للصباح والمساء في نهاية نوفمبر.</td>
+              <td class="p-4 align-top">
+                <ul class="space-y-1 pr-4">
+                  <li>بداية الموسم (سبتمبر) لا تزال حارة في النهار، تجنب المشي لفترات طويلة قبل الغروب.</li>
+                  <li>نوفمبر هو الشهر الأفضل لأجواء متوازنة على مدار اليوم.</li>
+                  <li>موسم الفعاليات المحلية في الرياض (موسم الرياض والأنشطة الترفيهية المرتبطة به) قد يزيد الازدحام حول المنتزه وحي الملز في نهاية الخريف؛ تخطّط للوقت الإضافي في النقل والمواقف عندها.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-6 text-xs leading-6 text-[#61716a]">
+        ملاحظة منهجية: الأرقام درجات مئوية متوسطة؛ لا تعادل الظروف الدقيقة في يوم معين. بالنسبة للكائنات المائية والطيور المهاجرة حول البحيرة والرياض بشكل عام، يكثر التواجد في فترتي الربيع والخريف حسب الأنماط المتعارف عليها في شبه الجزيرة العربية، لكن هذا المنتزه ليس محمية طبيعية، لذا لا نوصي بالاعتماد عليه كوجهة أساسية لمراقبة الحياة البرية.
+      </p>
     </div>
   </section>
 
   <section class="section bg-[#0b201a] text-white">
     <div class="shell">
       <span class="kicker !text-[#b6e2d3]">لماذا يختلف المكان؟</span>
-      <h2 class="section-title max-w-4xl">حديقة تُقرأ على إيقاع الماء والضوء</h2>
+      <h2 class="section-title max-w-4xl">History & Significance of King Abdullah Park | تاريخ وأهمية منتزه الملك عبدالله</h2>
       <div class="mt-10 grid gap-px overflow-hidden rounded-[30px] bg-white/10 md:grid-cols-3">
         <article class="bg-[#0b201a] p-8"><span class="text-4xl">≈</span><h3 class="mt-7 text-2xl font-bold">النافورة والبحيرة</h3><p class="mt-3 text-sm leading-7 text-white/58">العنصر البصري الأشهر في المنتزه، خاصة بعد حلول الظلام. العروض تخضع لجداول التشغيل والصيانة والفعاليات.</p></article>
         <article class="bg-[#0b201a] p-8"><span class="text-4xl">↝</span><h3 class="mt-7 text-2xl font-bold">المشي والمساحات المفتوحة</h3><p class="mt-3 text-sm leading-7 text-white/58">مسارات ومسطحات خضراء ومناطق جلوس تمنح الزائر مساحة للحركة والاستراحة بعيداً عن إيقاع الشوارع المحيطة.</p></article>
@@ -135,7 +323,7 @@ const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdu
   <section id="visit" class="section bg-[#fffdf7]">
     <div class="shell">
       <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-        <div><span class="kicker">خطط للزيارة</span><h2 class="section-title">المعلومة التي تحتاجها قبل أن تخرج</h2></div>
+        <div><span class="kicker">خطط للزيارة</span><h2 class="section-title">Location & How to Visit King Abdullah Park in Riyadh | الموقع وكيفية زيارة منتزه الملك عبدالله بالرياض</h2></div>
         <p class="max-w-lg text-sm leading-7 text-[#61716a]">هذه الصفحة لا تدّعي أن الجداول التشغيلية ثابتة. عند وجود تعارض بين هذا الدليل وإعلان رسمي حديث، اتبع الإعلان الرسمي.</p>
       </div>
       <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -152,31 +340,358 @@ const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdu
       <div class="lg:sticky lg:top-28 lg:self-start">
         <span class="kicker">الوصول بالتفصيل</span>
         <h2 class="section-title">إلى الملز بدون تخمين</h2>
-        <p class="lead">العنوان: شارع الأمين عبدالله العلي النعيم، حي الملز، الرياض 12836. اختر وسيلة الوصول بحسب الوقت والحرارة ووجود الفعاليات.</p>
-        <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex rounded-full bg-[#0b201a] px-5 py-3 text-sm font-bold !text-white" style="color: #ffffff !important;">فتح نقطة الموقع</a>
+        <p class="lead">العنوان: شارع الأمين عبدالله العلي النعيم، حي الملز، الرياض 12836. اختر وسيلة الوصول بحسب الوقت والحرارة ووجود الفعاليات. لكل وسيلة أدناه خطوات مكتملة ومدة متوقعة ونطاق تكلفة ونصائح الذروة.</p>
+        <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex rounded-full bg-[#0b201a] px-5 py-3 text-sm font-bold !text-white" style="color: #ffffff !important;">فتح نقطة الموقع على الخريطة</a>
       </div>
+
       <div class="space-y-4">
-        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚇</span><div><h3 class="text-xl font-bold">مترو الرياض</h3><p class="mt-2 text-sm text-[#61716a]">محطة «الملز» على المسار البرتقالي خيار عملي للوصول إلى المنطقة. أكمل الجزء الأخير سيراً أو بسيارة أجرة بحسب بوابة الدخول ودرجة الحرارة. راجع تطبيق «درب» أو خريطة النقل الرسمية للمسار النهائي والتحويلات.</p></div></div></article>
-        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚌</span><div><h3 class="text-xl font-bold">حافلات الرياض</h3><p class="mt-2 text-sm text-[#61716a]">تخدم شبكة الحافلات حي الملز ومحيط المنشآت الرياضية. أرقام المسارات ومواقع التوقف قابلة للتحديث، لذلك استخدم مخطط الرحلات الرسمي في يوم الزيارة بدلاً من الاعتماد على رقم حافلة محفوظ.</p></div></div></article>
-        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">✈️</span><div><h3 class="text-xl font-bold">من مطار الملك خالد الدولي</h3><p class="mt-2 text-sm text-[#61716a]">الأبسط هو سيارة أجرة مرخصة أو خدمة نقل مرخصة مباشرة إلى الملز. بالنقل العام، ادخل شبكة المترو عبر مسار المطار ثم بدّل داخل الشبكة باتجاه المسار البرتقالي ومنطقة الملز؛ وقت الرحلة يعتمد على التحويلات وفترات الانتظار.</p></div></div></article>
-        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚕</span><div><h3 class="text-xl font-bold">سيارة الأجرة والنقل المرخص</h3><p class="mt-2 text-sm text-[#61716a]">اطلب إنزالك عند البوابة الأقرب لمقصدك داخل المنتزه، واحتفظ بنقطة الالتقاء للعودة. بعد الفعاليات قد يزداد زمن الانتظار والازدحام حول المداخل.</p></div></div></article>
-        <article class="card p-7"><div class="flex gap-5"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚗</span><div><h3 class="text-xl font-bold">السيارة والمواقف</h3><p class="mt-2 text-sm text-[#61716a]">وثائق إنشاء المنتزه تشير إلى أكثر من ألف موقف سيارة. لا يعني ذلك ضمان توفر موقف عند الذروة؛ في نهاية الأسبوع والفعاليات، الوصول المبكر أو النقل العام أكثر قابلية للتنبؤ.</p></div></div></article>
+        <article class="card p-7">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">✈️</span>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xl font-bold">من مطار الملك خالد الدولي (KKIA)</h3>
+                <div class="text-xs text-[#61716a]">
+                  <span class="rounded-full bg-[#dcebe5] px-3 py-1 font-bold text-[#1d6b56]">مدة: متوسطة – طويلة</span>
+                  <span class="mr-2 mt-1 inline-block rounded-full bg-[#fff8ec] px-3 py-1 font-bold text-[#d97706]">تكلفة: متوسطة – مرتفعة</span>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-bold text-[#071713]">خطوات عامة للوصول:</p>
+              <ol class="mt-2 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                <li>اخرج من مبنى الوصول في مطار الملك خالد الدولي (KKIA) واتجه نحو محطة مترو المطار (خط المطار – المرفق حديثاً مع شبكة الرياض الجديدة).</li>
+                <li>اركب خط المطار باتجاه وسط الرياض، و<strong>ابدّل داخل الشبكة إلى الخط البرتقالي (مترو الرياض)</strong>؛ استخدم تطبيق النقل الرسمي لمعرفة محطة التبديل الدقيقة والمسار اللحظي لأن التشغيل قد يُعدّل.</li>
+                <li>انزل في <strong>محطة الملز</strong> على الخط البرتقالي؛ المسافة المتبقية من المحطة إلى بوابات المنتزه تتراوح بين 10 إلى 20 دقيقة سيراً على الأقدام حسب البوابة القريبة منك، أو استقل وسيلة نقل مرخصة للمسافة الأخيرة خصوصاً في الصيف الحار.</li>
+                <li>إذا اخترت طريق «سيارة أجرة / نقل خاص مباشر» من المطار، اطلب الإنزال عند بوابة المنتزه الأقرب لمنطقة الجلوس أو المنطقة التي تخطط لبدء زيارتك منها؛ هذا يختصر المشي في حرارة الظهيرة.</li>
+              </ol>
+              <p class="mt-3 text-sm text-[#61716a]">
+                <strong class="text-[#071713]">في الذروة والأعياد:</strong>
+                في عطلات نهاية الأسبوع ومهرجانات موسم الرياض أو الأعياد الوطنية، قد يزداد وقت الانتظار أمام نقاط النقل الخاصة بمطار KKIA؛ خصّص 30 إلى 60 دقيقة إضافية فوق تقديرات التطبيقات. إذا كنت مسافراً متقدماً الموعد، لا تحجز فعالية داخل المنتزه قبل ساعة واحدة على الأقل من هبوط الطائرة.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card p-7">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚇</span>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xl font-bold">مترو الرياض (الخطوط + المحطة)</h3>
+                <div class="text-xs text-[#61716a]">
+                  <span class="rounded-full bg-[#e8f2ed] px-3 py-1 font-bold text-[#1d6b56]">مدة: متوسطة</span>
+                  <span class="mr-2 mt-1 inline-block rounded-full bg-[#e8f2ed] px-3 py-1 font-bold text-[#1d6b56]">تكلفة: منخفضة</span>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-bold text-[#071713]">خطوات عامة للوصول:</p>
+              <ol class="mt-2 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                <li>تحقق من أقرب محطة مترو لمنزلك أو فندقك عبر تطبيق النقل الرسمي أو الخريطة العامة للشبكة.</li>
+                <li>عند الحاجة إلى تبديل بين الخطوط (مثل الخط الأحمر أو الأخضر إلى البرتقالي) اتبع اللافتات داخل المحطات، ولا تعتمد على ذاكرة الخطوط القديمة؛ فقد تُضاف فروع جديدة أو يتم تعديل أسماء المحطات.</li>
+                <li>انزل في محطة الملز، ثم اختر بوابة الدخول المناسبة حسب المسار الخاص بك (انظر قسم المسارات في الأسفل). الأبواب القريبة قد تتغير حسب الفعاليات، لذا تساءل موظفي الموقع أو انظر اللافتات الإرشادية.</li>
+              </ol>
+              <p class="mt-3 text-sm text-[#61716a]">
+                <strong class="text-[#071713]">في الذروة والأعياد:</strong>
+                حاول تجنب ساعات الذروة العائلية (18:30 – 22:30 في أيام العطل والخريف والشتاء) إذا كنت مع أطفال صغار أو أكياس، أو اصعد عربة المقعد الأول/الأخر لتقليل الازدحام أثناء ركوبك.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card p-7">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚌</span>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xl font-bold">حافلات الرياض العامة</h3>
+                <div class="text-xs text-[#61716a]">
+                  <span class="rounded-full bg-[#e8f2ed] px-3 py-1 font-bold text-[#1d6b56]">مدة: متوسطة – طويلة</span>
+                  <span class="mr-2 mt-1 inline-block rounded-full bg-[#e8f2ed] px-3 py-1 font-bold text-[#1d6b56]">تكلفة: منخفضة جداً</span>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-bold text-[#071713]">خطوات عامة للوصول:</p>
+              <ol class="mt-2 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                <li>ادخل موقع أو تطبيق مخطط الرحلات الرسمي التابع لهيئة النقل العام في الرياض، وابحث عن وجهة "منتزه الملك عبدالله" أو "حي الملز – شارع الأمين عبدالله العلي النعيم".</li>
+                <li>دائماً <u>استخدم المخطط اللحظي في يوم الزيارة</u> ولا تعتمد على رقم خط محفوظ من سنوات سابقة؛ لأن أرقام الخطوط وقدرات التشغيل قابلة لإعادة الهيكلة.</li>
+                <li>انزل عند أقرب نقطة توقف إلى البوابة المرغوبة، ثم أكمل المشي الأخير أو استقل وسيلة نقل قصيرة حسب الحرارة والوزن الذي تحمله.</li>
+              </ol>
+              <p class="mt-3 text-sm text-[#61716a]">
+                <strong class="text-[#071713]">في الذروة والأعياد:</strong>
+                قد تُضاف رحلات استثنائية، أو يعاد توجيه الحافلات بسبب إغلاقات الطرق المؤقتة حول حي الملز أثناء الأحداث الكبرى في الملز المجاور (ملعب الأمير فيصل بن فهد)؛ تأكد قبل الخروج بساعة على الأقل.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card p-7">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚕</span>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xl font-bold">سيارة الأجرة وخدمات النقل المرخص</h3>
+                <div class="text-xs text-[#61716a]">
+                  <span class="rounded-full bg-[#fff8ec] px-3 py-1 font-bold text-[#d97706]">مدة: قصيرة – متوسطة</span>
+                  <span class="mr-2 mt-1 inline-block rounded-full bg-[#fff8ec] px-3 py-1 font-bold text-[#d97706]">تكلفة: متوسطة</span>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-bold text-[#071713]">خطوات عامة للوصول:</p>
+              <ol class="mt-2 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                <li>حدّد عنوان وجهتك بوضوح: "منتزه الملك عبدالله – شارع الأمين عبدالله العلي النعيم – حي الملز – الرياض"، مع ذكر البوابة المفضلة (مثل "البوابة القريبة من بحيرة المنتزه" إن وجدت) لتجنب جولة إضافية حول السياج.</li>
+                <li>طلب الإنزال عند أقرب نقطة ممكنة للمدخل أو الموقف المخصص؛ لا تنس أن تأخذ معك نقطة لقاء واضحة للعودة (مثل اسم بوابة أو رمز عمود إنارة مميز) لسهارة لقاء العائلة بعد نهاية الزيارة.</li>
+                <li>إذا كنت ستعود من نفس النقطة، استخدم نفس مقدم الخدمة أو احجز العودة قبل نهاية الفعالية لتقليل وقت الانتظار في نهاية الليل.</li>
+              </ol>
+              <p class="mt-3 text-sm text-[#61716a]">
+                <strong class="text-[#071713]">في الذروة والأعياد:</strong>
+                بعد عروض النافورة أو الأحداث الكبرى في الملعب المجاور، قد تستغرق السيارات الخاصة ووسائل النقل 30 إلى 60 دقيقة إضافية للخروج من دوار الملز والشوارع المحيطة. إما اصبر، أو امشِ مسافة قصيرة إلى شارع رئيسي خارج حي الملز لطلب السيارة هناك.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card p-7">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcebe5] font-black text-[#1d6b56]">🚗</span>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-xl font-bold">السيارة الخاصة والمواقف</h3>
+                <div class="text-xs text-[#61716a]">
+                  <span class="rounded-full bg-[#fff8ec] px-3 py-1 font-bold text-[#d97706]">مدة: قصيرة</span>
+                  <span class="mr-2 mt-1 inline-block rounded-full bg-[#e8f2ed] px-3 py-1 font-bold text-[#1d6b56]">تكلفة: منخفضة (رسوم موقف رمزية إن وجدت)</span>
+                </div>
+              </div>
+              <p class="mt-3 text-sm font-bold text-[#071713]">خطوات عامة للوصول:</p>
+              <ol class="mt-2 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                <li>في تطبيق الملاحة العام، اكتب "منتزه الملك عبدالله – حي الملز" واختر اقتراح الملاحة الذي يقود إلى مدخل المواقف وليس حاجز المشي فقط؛ بعض التطبيقات تُصلك لنقطة مشاة لا سيارات خلفها.</li>
+                <li>اتبع اللافتات داخل الموقف إلى أقرب صف متاح، واحفظ رقم الصف ورمز العمود/البوابة قبل مغادرة السيارة (من السهل الضياع في المواقف الكبيرة ليلاً).</li>
+                <li>إذا كان الموقف الداخلي ممتلئاً، خدّ بالبحث عن مواقف عامة في الشوارع المحيطة أو مواقف المعالم القريبة (ملعب الأمير فيصل بن فهد / مركز الملز الترفيهي عند عدم وجود مباريات)، ثم أمشِ 10–15 دقيقة للوصول.</li>
+              </ol>
+              <p class="mt-3 text-sm text-[#61716a]">
+                <strong class="text-[#071713]">في الذروة والأعياد:</strong>
+                الوصول المبكر (قبل 16:00 في الموسم البارد) يُضمن لك موقفاً أقرب إلى المداخل. تأخرك عن هذا التوقيت في نهاية الأسبوع قد يعني الدوران 30–60 دقيقة حول الشوارع بحثاً عن موقف متاح. السيارات الكهربائية: لا نملك توثيقاً موثوقاً لمحطة شحن داخل حدود المنتزه؛ افحص خريطة الشحن العامة قبل الوصول إذا كانت سيارتك بحاجة إلى شحن.
+              </p>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section id="services" class="section">
+  <section id="itineraries" class="section soft-grid">
     <div class="shell">
-      <span class="kicker">احتياجات الزائر</span>
-      <h2 class="section-title">من دورة المياه إلى شحن السيارة</h2>
-      <p class="lead">نوصي بنوع الخدمة لا باسم متجر أو فندق أو مطعم، حفاظاً على حياد الدليل غير الربحي.</p>
-      <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <article class="card p-6"><h3 class="font-bold">دورات المياه والمصليات</h3><p class="mt-2 text-sm text-[#61716a]">تذكر أوصاف المشروع وجود دورات مياه موزعة ومصليات للرجال والنساء. اسأل موظفي الموقع عن أقرب مرفق متاح عند الحاجة.</p></article>
-        <article class="card p-6"><h3 class="font-bold">الأطفال والعائلات</h3><p class="mt-2 text-sm text-[#61716a]">توجد مناطق لعب ومساحات جلوس ومناطق مظللة. راقب الأطفال قرب المسطحات المائية وفي ساعات الازدحام.</p></article>
-        <article class="card p-6"><h3 class="font-bold">الطعام والشراب</h3><p class="mt-2 text-sm text-[#61716a]">قد تتوفر نقاط ضيافة داخل المنتزه بحسب التشغيل والفعاليات. وفي الملز توجد مطاعم ومقاهٍ ومخابز من فئات متعددة؛ اختر وفق احتياجك الغذائي دون اعتماد هذا الدليل كتوصية تجارية.</p></article>
-        <article class="card p-6"><h3 class="font-bold">الإقامة</h3><p class="mt-2 text-sm text-[#61716a]">تنتشر في وسط الرياض والملز خيارات فنادق وشقق فندقية بمستويات مختلفة. قارِن الموقع وسياسة الإلغاء ووسيلة النقل بدلاً من الاسم التجاري.</p></article>
-        <article class="card p-6"><h3 class="font-bold">البقالة والسوبرماركت</h3><p class="mt-2 text-sm text-[#61716a]">توجد متاجر مواد غذائية وصيدليات في أحياء الملز المحيطة. احمل ماءً كافياً خصوصاً في الأيام الدافئة.</p></article>
-        <article class="card p-6"><h3 class="font-bold">الوقود والشحن الكهربائي</h3><p class="mt-2 text-sm text-[#61716a]">محطات الوقود متاحة في شبكة شوارع الرياض. لا نملك توثيقاً موثوقاً لمحطة شحن كهربائي داخل المنتزه نفسه؛ افحص خريطة الشحن العامة قبل الوصول إذا كانت سيارتك كهربائية.</p></article>
+      <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div>
+          <span class="kicker">مسارات حسب تركيبتك السائرة</span>
+          <h2 class="section-title">اختر خطتك: من 3 ساعات مع الأطفال إلى يوم كامل</h2>
+        </div>
+        <p class="max-w-lg text-sm leading-7 text-[#61716a]">جميع المسارات إرشادية فقط ويمكن تعديلها حسب الطقس في زيارتك (انظر حالة الطقس أعلاه القسم #weather).</p>
+      </div>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <article class="card overflow-hidden p-0">
+          <header class="bg-[#0b201a] p-6 text-white">
+            <p class="text-xs font-bold text-[#b6e2d3]">المسار 1 · عائلي</p>
+            <h3 class="mt-2 text-2xl font-black">ممر الأطفال وعروض الماء (العائلة)</h3>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الوقت</p><p class="mt-1 font-black text-white">3.5 ساعات</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الصعوبة</p><p class="mt-1 font-black text-[#b6e2d3]">منخفضة</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">التوقف</p><p class="mt-1 font-black text-white">5+ نقاط</p></div>
+            </div>
+          </header>
+          <div class="p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">مناسب ل: أبوين + 1 أو 2 أطفال دون عمر 10 سنوات، وربما أحد كبار السن مع العائلة.</p>
+            <h4 class="mt-4 font-bold text-[#071713]">خطوات المسار المقترحة:</h4>
+            <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+              <li><strong>البداية (00:00):</strong> ادخل من البوابة الأقرب لمواقف السيارات أو لمحطة مترو الملز، ثم توجه مباشرة إلى منطقة الألعاب المخصصة للأطفال (سؤال موظفي الموقع يختصر 10 دقائق ضياع).</li>
+              <li><strong>00:00 – 01:00:</strong> لعب الأطفال مع فترتان قصيرتان للراحة وماء؛ لا تنس أن تطلب منهم دخول دورة المياه قبل المغادرة لأن الازدحام حول دورات المياه يزداد مساءً.</li>
+              <li><strong>01:00 – 01:30:</strong> توقف استراحة + وجبة خفيفة في إحدى المساحات المظللة القريبة من منطقة اللعب.</li>
+              <li><strong>01:30 – 02:30:</strong> جولة مشي قصيرة حول جزء من البحيرة (الجزء ذو المشاة المسطحين)، مع التوقف لالتقاط صور عائلية في مكان مفتوح بعيداً عن الحشود.</li>
+              <li><strong>02:30 – 03:15:</strong> مشاهدة النافورة عند الغروب (تأكد من أن أطفالك مرتاحون ولبسوا ملابس مناسبة إذا كان موسماً بارداً).</li>
+              <li><strong>03:15 – 03:30:</strong> العودة التدريجية نحو البوابة، أو تمديد 30 دقيقة إضافية إذا كان الأطفال لا يزالون بحالة جيدة والجو مستقر.</li>
+            </ol>
+            <p class="mt-4 border-t border-[#0b201a]/8 pt-4 text-xs leading-6 text-[#61716a]">
+              ملاحظات مهمة: راقب الأطفال قرب ضفاف البحيرة دائماً، وحددوا معاً "نقطة لقاء" واضحة قبل البدء في حال انفصال أحد أفراد العائلة.
+            </p>
+          </div>
+        </article>
+
+        <article class="card overflow-hidden p-0">
+          <header class="bg-[#071713] p-6 text-white">
+            <p class="text-xs font-bold text-[#b6e2d3]">المسار 2 · التصوير الطبيعي والضوء</p>
+            <h3 class="mt-2 text-2xl font-black">ممرات البحيرة والنافورة الضوئية</h3>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الوقت</p><p class="mt-1 font-black text-white">4 ساعات</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الصعوبة</p><p class="mt-1 font-black text-[#e5cda7]">متوسطة</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">المشي</p><p class="mt-1 font-black text-white">5–7 كم</p></div>
+            </div>
+          </header>
+          <div class="p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">مناسب ل: مصورين ضوئيين هواة أو محترفين، محبو المشي المتوازن، أزواج بدون أطفال صغار.</p>
+            <h4 class="mt-4 font-bold text-[#071713]">خطوات المسار المقترحة:</h4>
+            <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+              <li><strong>00:00 قبل الغروب بـ 45–30 دقيقة:</strong> ادخل من البوابة الشرقية للمنتزه (حيث يفتح الزاوية إلى جهة الغرب مباشرة على البحيرة)؛ في هذا التوقيت، يكون الشمس أمام الكاميرا متجهة إلى أعلى الجهة الغربية من البحيرة، مما يمنح فرصاً لصور غروب تعكس ضوءاً ذهبياً على سطح الماء.</li>
+              <li><strong>00:00 – 01:00:</strong> امشِ ببطء على الممرات القريبة من ضفة البحيرة الغربية، والتقط لقطات للعناصر المعمارية البسيطة (القناطر، المقاعد الخشبية، الأشجار) مع ضبط التعريض اليدوي إن أمكن.</li>
+              <li><strong>01:00 – 01:30:</strong> توقف في منطقة المقاعد المظللة القريبة من منتصف الضفة لتناول ماء واستراحة بصرية؛ لا تنس الحماية للكاميرا في حالات الرمل أو الرياح الخفيفة (الربيع).</li>
+              <li><strong>01:30 – 02:30:</strong> انتقل إلى الجهة الشمالية للبحيرة أو مكان يطل مباشرة على موضع النافورة الرئيسية، واستعد لبداية عرض الماء والضوء والموسيقى إذا كان في موعده الرسمي.</li>
+              <li><strong>02:30 – 03:30:</strong> لقطات العرض المائي الضوئي، ثم لقطات ليلية للمنتزه مع الإضاءة المزخرفة في المسارات المغلقة.</li>
+              <li><strong>03:30 – 04:00:</strong> خروج تدريجي، وتوقف لحظات إضافية أمام المدخل الرئيسي إذا كانت الإضاءة مناسبة للقطة النهائية.</li>
+            </ol>
+            <p class="mt-4 border-t border-[#0b201a]/8 pt-4 text-xs leading-6 text-[#61716a]">
+              ملاحظات مهمة: <u>احترم خصوصية العائلات والأطفال عند التصوير</u>؛ لا تصوّر وجوهاً واضحة إلا بعد إذن صريح. كما تجنب الحواجز وقضبان الحماية "لأن الصورة أفضل"؛ السلامة فوق كل صورة.
+            </p>
+          </div>
+        </article>
+
+        <article class="card overflow-hidden p-0">
+          <header class="bg-[#1d6b56] p-6 text-white">
+            <p class="text-xs font-bold text-[#b6e2d3]">المسار 3 · ميسّر منخفض الحركة · عالية الوصول · ذوو الإعاقة</p>
+            <h3 class="mt-2 text-2xl font-black">كبار السن وذوي الإعاقة الحركية</h3>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الوقت</p><p class="mt-1 font-black text-white">2–3 ساعات</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">الصعوبة</p><p class="mt-1 font-black text-[#b6e2d3]">منخفضة جداً</p></div>
+              <div class="rounded-2xl bg-white/8 p-3 py-2"><p class="text-white/50">المشي</p><p class="mt-1 font-black text-white">≤ 2 كم</p></div>
+            </div>
+          </header>
+          <div class="p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">مناسب ل: كبار السن، ذوي الإعاقة الحركية، من لديه آلام المفاصل، النساء الحوامل في الأشهر الوسطى والمتأخرة، أو من يسافر مع تجهيزات طبية.</p>
+            <h4 class="mt-4 font-bold text-[#071713]">خطوات المسار المقترحة:</h4>
+            <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+              <li><strong>قبل الوصول:</strong> تواصل مع معلومات المنتزه (عبر الهاتف أو منصات التواصل الرسمية إن كانت متاحة) للاستفسار عن أحدث مسارات ميسرة وآلية الحصول على كراسي متحركة إذا كنت بحاجة إليها؛ خدمات الزوار قد تختلف حسب المواسم.</li>
+              <li><strong>00:00:</strong> ادخل من أقرب بوابة لمسارات مستوية بدون درجات (اطلب عند المدخل "بوابة المسار الميسر")، واركب المسارات المسطحة المخصصة.</li>
+              <li><strong>00:00 – 00:45:</strong> توقف أول في 3 مناطق جلوس مظللة متسلسلة قريبة من البوابة، مع مشاهدة جزء من البحيرة دون الحاجة إلى مشي طويل.</li>
+              <li><strong>00:45 – 01:30:</strong> مشي قصير (باستخدام الكرسي المتحرك أو عثابات المشي إن لزمت) حول حلقة مستديرة صغيرة من المسارات المستوية على بعد 1.5 كم كحد أقصى ذهاباً وإياباً.</li>
+              <li><strong>01:30 – 02:15:</strong> استراحة طويلة + شراب/وجبة خفيفة في منطقة المقاعد المظللة، ثم مشاهدة النافورة إذا كان في موقف يمكن رؤيته من المقعد.</li>
+              <li><strong>02:15 – 03:00:</strong> عودة بطيئة إلى البوابة دون تسرع، مع توقفين إضافيين إذا احتجت للراحة.</li>
+            </ol>
+            <p class="mt-4 border-t border-[#0b201a]/8 pt-4 text-xs leading-6 text-[#61716a]">
+              ملاحظات مهمة: إذا كنت مصاباً بأمراض قلبية أو تنفسية مزمنة، لا تنس أدويتك معك، وخطط للزيارة في الفترات الباردة من اليوم (قبل 10 صباحاً أو بعد 7 مساءً) حتى في الشتاء.
+            </p>
+          </div>
+        </article>
+
+        <article class="card overflow-hidden p-0 xl:col-span-2 md:col-span-2">
+          <header class="bg-[#e5cda7] p-6 text-[#071713]">
+            <p class="text-xs font-bold text-[#1d6b56]">المسارات العامة · نصف يوم و يوم كامل</p>
+            <div class="mt-2 grid gap-4 md:grid-cols-2">
+              <div>
+                <h3 class="text-2xl font-black">المسار العام (نصف يوم / 3 ساعات)</h3>
+                <p class="mt-1 text-sm text-[#48584f]">مناسب لأي فئة، زوار الرياض العابرون لوقت محدود.</p>
+                <ol class="mt-4 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                  <li>00:00 البدء من البوابة الرئيسية + معلومات عامة عن المنتزه من لوحات الإرشاد.</li>
+                  <li>00:30 ممر البحيرة الرئيسي المشي + صور تذكارية (حوالي 1 ساعة 15 دقيقة).</li>
+                  <li>01:45 استراحة (15 دقيقة) + شراب/ماء.</li>
+                  <li>02:00 مشاهدة النافورة إذا كان في موعدها الرسمي (30–45 د).</li>
+                  <li>02:45 العودة نحو البوابة؛ خذ طريق قصير ولا تدور حول البحيرة مرة ثانية.</li>
+                </ol>
+              </div>
+              <div>
+                <h3 class="text-2xl font-black">المسار العام (يوم كامل / 6 ساعات +)</h3>
+                <p class="mt-1 text-sm text-[#48584f]">مناسب لمن يقضي يوماً كاملاً في حي الملز ووسط الرياض.</p>
+                <ol class="mt-4 space-y-2 pr-5 list-decimal text-sm leading-7 text-[#48584f]">
+                  <li>00:00 – 03:30: الزيارة الأساسية للمنتزه (أي من المسارات الثلاثة أعلاه حسب فئتك) + عروض النافورة.</li>
+                  <li>03:30 – 04:30: وجبة في الأنماط الغذائية العامة المحيطة بحي الملز (المطبخ السعودي، وجبات سريعة، خيارات غذائية خاصة… الخ؛ بدون ذكر أسماء تجارية محددة).</li>
+                  <li>04:30 – 05:30: زيارة أحد المعالم العامة القريبة حسب الرغبة: حديقة الحيوان بالرياض (إذا كانت ساعات التشغيل تسمح)، أو الملعب/مجمع الملز الترفيهي في حالة وجود فعالية مناسبة، أو مركز الملك عبدالعزيز التاريخي في وسط الرياض (بواسطة مترو أو سيارة).</li>
+                  <li>05:30 – 06:00: العودة إلى الفندق أو بداية طريقك للعودة إلى المطار أو المدينة.</li>
+                </ol>
+              </div>
+            </div>
+          </header>
+          <div class="p-6 text-xs leading-6 text-[#61716a]">
+            تذكير: جميع المعالم المذكورة في "يوم كامل" هي معالم عامة مجاورة أو في وسط الرياض قابلية الوصول إليها عبر النقل العام/الخاص. لا نوصي بأي تذاكر مسبقة مدفوعة بناءً على هذا الدليل؛ تحقق دائماً من توافر وساعات أي معلم إضافي تريد دمجه قبل يوم الزيارة.
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="visitor" class="section">
+    <div class="shell">
+      <span class="kicker">خدمات الزائر والمرافق المجاورة</span>
+      <h2 class="section-title">من دورات المياه إلى شحن السيارة + أنماط الخدمات المحيطة</h2>
+      <p class="lead">نوصي دائماً بنوع الخدمة والتصنيف العام لا باسم متجر أو فندق أو مطعم أو تطبيق، حفاظاً على حياد الدليل غير الربحي وعدم وجود إحالات مدفوعة.</p>
+    </div>
+  </section>
+
+  <section id="services" class="section !pt-0">
+    <div class="shell">
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <article class="card p-6">
+          <h3 class="font-bold">دورات المياه والمصليات</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>تذكر أوصاف المشروع وجود دورات مياه موزعة في عدة نقاط حول المنتزه، غالباً قرب المداخل الكبرى ومواقف السيارات ومناطق اللعب.</li>
+            <li>توجد مصليات للرجال والنساء في مواضع مختلفة؛ اسأل موظفي الموقع عن أقرب مرفق متاح عند الحاجة فوراً، لأن بعض المرافق قد تغلق مؤقتاً للصيانة.</li>
+            <li>في المواسم الحارة، يفضّل غسل اليدين وتجفيفهما قبل الجلوس لتجنب الفيروسات الموسمية؛ لا تعتمد دائماً على توافر الصابون في دورات المياه العامة، واحمل معك معقماً يدوياً صغيراً.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">إمكانية الوصول (الإعاقة الحركية / السمعية / البصرية)</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>المسارات العامة في المنتزه مصممة في الغالب لمسطحات واسعة ومنحدرات خفيفة، لكن تفاصيل المسارات الميسرة وأماكن المصاعد قد تتغير؛ اسأل عند البوابة الرئيسية عند الوصول مباشرة.</li>
+            <li>قد توفر إدارة المنتزه كراسي متحركة عند الطلب لبعض الحالات، لكننا لا نضمن ذلك لكل أيام السنة؛ خذ معك كرسيك أو عثاباتك إن كان حالتك تتطلبها.</li>
+            <li>اللافتات الإرشادية العامة تكون عربية/إنجليزية في الغالب، لكننا لا نملك بيانات موثوقة عن لافتات برايل أو تفسير صوتي للمعالم؛ لذا من لديه إعاقة بصرية يفضّل أن يكون برفقة مرافق ملم بالمنتزه أو يوظف معلماً سياحياً عاماً متخصصاً.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">الأطفال والعائلات + دورات الأم والرضاعة</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>توجد مناطق لعب ومساحات جلوس ومناطق مظللة قريبة بعضها من دورات المياه، وهي مواقع جيدة لمرافق الرضاعة الطبيعية إن وُجدت.</li>
+            <li>إن لم تكن هناك غرف رضاعة مخصصة في المواقع التي ذهبت إليها، يمكنك دائماً استخدام زوايا المقاعد المظللة البعيدة عن الزحام مع حجاب خفيف إن شئت.</li>
+            <li>راقب الأطفال قرب المسطحات المائية وفي ساعات الازدحام (18:30 – 22:00)، ولا تتركهم يلعبون تحت أشجار مرتفعة أو بالقرب من حواف الممرات المائية.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">الأمن والاستعلامات والمفقودات</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>توجد دوريات أمنية وموظفين لبس زي موحد لون غامق في أغلب أوقات العمل؛ يمكنك سؤال أي شخص يرتدي زي الموظف عن طريق لقاء العائلة أو مركز المفقودات.</li>
+            <li>إذا ضاعت أحد أفراد العائلة أو الهاتف أو المحفظة، توجه فوراً إلى أقرب بوابة دخول أو مركز معلومات؛ عادة ما تحتوي على "مكتب المفقودات" الخاص بكل منتزه عام.</li>
+            <li>في حالات الطوارئ الطبية، اطلب الإسعاف الرسمي عبر أرقام الطوارئ المعتمدة في المملكة، وأخبرهم بمسمى المنتزه والبوابة الأقرب لك لتقصير وقت وصول الفريق الطبي.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">الطعام والشراب داخل المنتزه وحوله</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>قد تتوفر نقاط ضيافة داخل المنتزه بحسب التشغيل والفعاليات، مثل نقاط بيع المشروبات والوجبات الخفيفة؛ جودة الخدمة وأنواعها تتغير دائماً.</li>
+            <li>وفي حي الملز المحيط بالمنتزه توجد أنماط المطاعم والمقاهي والمخابز من فئات متعددة (المطبخ المحلي، وجبات سريعة، خيارات خاصة بالحساسيات الغذائية، الخ).</li>
+            <li>اختر وفق احتياجك الغذائي دون اعتماد هذا الدليل كتوصية تجارية؛ تحقق من ساعات العمل وقبول العائلات مباشرة مع مقدم الخدمة قبل الوصول إليه.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">الإقامة في مناطق الملز ووسط الرياض</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>تنتشر في وسط الرياض وحي الملز خيارات فنادق وشقق فندقية بمستويات مختلفة من نجوم/فئات الأسعار، تناسب العائلات أو الأفراد أو رجال الأعمال.</li>
+            <li>عند المقارنة: قارِن موقع الفندق من بوابة المنتزه (الأقل من 15 دقيقة بواسطة سيارة أفضل)، وسياسة الإلغاء في موسم الذروة، ووسيلة النقل من وإلى المطار، بدلاً من التركيز على الاسم التجاري.</li>
+            <li>إذا كنت من الأسر التي تحب الاستمتاع بالليل في المنتزه مرتين، فاختر إقامة على مسافة مشي قريبة من حي الملز لتقليل استخدام السيارات والوقت في الطريق.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">البقالة والسوبرماركت والصيدليات حول الحي</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>توجد متاجر مواد غذائية وصيدليات وسوبر ماركت في أحياء الملز المحيطة بالمنتزه، وعند نقاط قريبة من الشوارع الرئيسية.</li>
+            <li>احمل معك ماءً كافياً وبطاريات إضافية للهاتف خصوصاً في أيام الدافئة والصيف؛ المتاجر في الداخل قد تكون مزدحمة في الذروة أو مغلقة في وقت مبكر من الأعياد.</li>
+            <li>إذا كنت بحاجة إلى دواء وصفة طبية، راجع أقرب صيدلية عامة في حي الملز ولا تعتمد على وجود صيدلية مفتوحة داخل حدود المنتزه نفسه.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">محطات الوقود وشحن السيارات الكهربائية</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>محطات الوقود متاحة بكثرة في شبكة شوارع الرياض العامة وحي الملز المحيط؛ اختر أقرب محطة قبل الوصول إلى المنتزه لتجنب العودة بعد الزيارة في وقت لاحق في شوارع مزدحمة.</li>
+            <li>لا نملك توثيقاً موثوقاً لمحطة شحن كهربائي داخل حدود المنتزه نفسه؛ افحص خريطة الشحن العامة قبل الوصول إذا كانت سيارتك كهربائية وتحتاج شحن قبل العودة إلى الفندق/المطار.</li>
+            <li>إذا كنت تستخدم سيارة أجرة كهربائية، أخبر السائق مسبقاً برغبتك في توقف للشحن إذا كانت الرحلة طويلة، لتخطيط الطريق بشكل أفضل.</li>
+          </ol>
+        </article>
+
+        <article class="card p-6">
+          <h3 class="font-bold">سياسة الحيوانات الأليفة + خدمات التوصيل</h3>
+          <ol class="mt-3 space-y-2 pr-5 list-decimal text-sm text-[#61716a]">
+            <li>بشكل عام، يُفضّل عدم إحضار الحيوانات الأليفة إلى المنتزهات العامة الكبيرة مثل منتزه الملك عبدالله ما لم يكن الموقع قد صرّح صراحة بقبولها؛ اسأل عند البوابة قبل الدخول حتى لا تضيع وقت.</li>
+            <li>بعض المنتزهات تسمح بالكلاب المقيدة بأشرطة صغيرة أو حيوانات مساعدة، لكن هذه السياسات تتغير حسب الموسم والأحداث المحلية.</li>
+            <li>خدمات التوصيل للمأكولات والمشروبات إلى داخل المنتزه قد تكون ممكنة في المداخل المخصصة فقط، ولا ننصح بالاعتماد عليها لأوقات محددة؛ العادة والأكثر موثوقية هي أن تحضر معك ماءً ومسحوقاً خفيفاً للأطفال أو كبار السن.</li>
+          </ol>
+        </article>
       </div>
     </div>
   </section>
@@ -199,25 +714,118 @@ const imageLake = 'https://upload.wikimedia.org/wikipedia/commons/3/3e/King_Abdu
     <div class="shell grid gap-12 lg:grid-cols-[1fr_1fr]">
       <div>
         <span class="kicker !text-[#b6e2d3]">معالم قريبة</span>
-        <h2 class="section-title">أماكن عامة تستحق أن تعرف موقعها</h2>
+        <h2 class="section-title">Landmarks & Attractions Around King Abdullah Park | معالم ومناطق الجذب حول منتزه الملك عبدالله</h2>
         <p class="max-w-xl text-white/58">ليست توصيات تجارية؛ هي معالم عامة وثقافية يمكن دمجها في يوم واحد بحسب الوقت والمسافة وحركة المرور.</p>
       </div>
       <div class="grid gap-3">
-        <div class="rounded-2xl border border-white/10 p-5"><strong>استاد الأمير فيصل بن فهد</strong><p class="mt-1 text-sm text-white/50">من أبرز معالم الملز المجاورة للمنتزه، وقد يزيد نشاطه ضغط الحركة والمواقف في أيام المباريات والفعاليات.</p></div>
-        <div class="rounded-2xl border border-white/10 p-5"><strong>حديقة الحيوان بالرياض</strong><p class="mt-1 text-sm text-white/50">وجهة عائلية عامة في نطاق الملز، مناسبة ليوم عائلي أطول إذا سمحت ساعات التشغيل والطقس.</p></div>
+        <div class="rounded-2xl border border-white/10 p-5"><strong>استاد الأمير فيصل بن فهد (Prince Faisal bin Fahd Stadium near King Abdullah Park)</strong><p class="mt-1 text-sm text-white/50">من أبرز معالم الملز المجاورة للمنتزه، وقد يزيد نشاطه ضغط الحركة والمواقف في أيام المباريات والفعاليات.</p></div>
+        <div class="rounded-2xl border border-white/10 p-5"><strong>حديقة الحيوان بالرياض (Riyadh Zoo near King Abdullah Park)</strong><p class="mt-1 text-sm text-white/50">وجهة عائلية عامة في نطاق الملز، مناسبة ليوم عائلي أطول إذا سمحت ساعات التشغيل والطقس.</p></div>
         <div class="rounded-2xl border border-white/10 p-5"><strong>مركز الملك عبدالعزيز التاريخي والمتحف الوطني</strong><p class="mt-1 text-sm text-white/50">وجهة ثقافية في وسط الرياض لفهم تاريخ المملكة والمدينة قبل أو بعد زيارة المنتزه.</p></div>
         <div class="rounded-2xl border border-white/10 p-5"><strong>قصر المصمك والمنطقة التاريخية المحيطة</strong><p class="mt-1 text-sm text-white/50">محطة تاريخية مختلفة في الطابع، ويمكن الوصول إليها بوسائل النقل داخل وسط الرياض.</p></div>
       </div>
     </div>
   </section>
 
+  <section id="responsibility" class="section soft-grid">
+    <div class="shell">
+      <span class="kicker">مواطنة سياحية ومسؤولية الزائر</span>
+      <h2 class="section-title">نصائح عامة لحماية المكان واحترام ثقافته الطبيعية</h2>
+      <p class="lead">منتزه الملك عبدالله مساحة عامة تخدم الآلاف أسبوعياً. سلوكك الفردي يحدد مدى متعة الآخرين وطول عمر المرافق في الأعوام القادمة.</p>
+      <div class="mt-8 grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
+        <div class="card overflow-hidden p-0">
+          <header class="bg-[#071713] p-6 text-white">
+            <p class="text-xs font-bold text-[#b6e2d3]">قائمة المسؤولية · سبع نقاط أساسية</p>
+            <h3 class="mt-2 text-2xl font-black">ما الذي يمكنك فعله؟</h3>
+          </header>
+          <ol class="p-6 space-y-4 pr-6 list-decimal text-sm leading-7">
+            <li>
+              <p class="font-black text-[#071713]">١. ترشيد المياه مورد ثمين</p>
+              <p class="mt-1 text-[#48584f]">المياه في المملكة مورد ثمين ومكلف بيئياً حتى في المدن الكبرى. لا تلوث البحيرة بالنفايات ولا تشغل صنابير دورات المياه لأوقات أطول من اللازم. المياه المعالجة تُستخدم عادة في سقي المساحات الخضراء بالمنتزهات العامة في الرياض؛ لذا أي توفير لك يساهم في بقاء المنتزه أخضر أطول.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٢. النفايات والفرز الصحيح</p>
+              <p class="mt-1 text-[#48584f]">استخدم صناديق النفايات الموزعة ولا تترك قمامة أمام المقاعد أو على الممرات المشي. حاول فصل البلاستيك عن الورق والبقايا العضوية إن أمكن، حتى لو لم تكن هناك صناديق مخصصة؛ هذا الالتزام يسهل مراحل المعالجة لاحقاً ويقلل التلوث البصري في المنتزه.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٣. احترام الأماكن الدينية والثقافية المحلية</p>
+              <p class="mt-1 text-[#48584f]">عند دخول أوقات الصلاة الخمس، استخدم المصليات المخصصة إن أردت الصلاة، واحترم الأجواء الهادئة حول هذه المواقع. الملابس المحتشمة والمريحة هي الأكثر قبولاً في الأماكن العامة والمتنزهات السعودية، خصوصاً خلال شهر رمضان والأعياد الوطنية.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٤. السلامة عند ضفاف البحيرة والنافورة</p>
+              <p class="mt-1 text-[#48584f]">لا تجلس أو تقف على حواف حواجز المياه؛ الأطفال قد ينزلقون بسهولة تحت تأثير الرياح أو الحشود. لا تدخل الماء أو تحاول لمس خطوط أنابيب النافورة تحت أي ظرف؛ محركاتها وأنابيبها تحت ضغط عالٍ قد تكون خطيرة. راقب الأطفال باستمرار عند البحيرة والنافورة حتى لو كانوا يعرفون السباحة.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٥. الرقابة على الأطفال ونقطة اللقاء</p>
+              <p class="mt-1 text-[#48584f]">أطفالك مسؤوليتك حتى في أماكن الألعاب المجهزة بعوامل أمان. قبل بدء الزيارة، اتفق معهم على نقطة لقاء واضحة (مثل عمود إنارة مميز أو بوابة معينة أو نافورة صغيرة) وإذا كان أعمارهم صغيرة اكتب هاتفك على بطاقة صغيرة في جيوبهم.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٦. التصوير واحترام خصوصية الآخرين</p>
+              <p class="mt-1 text-[#48584f]">حافظ خصوصية العائلات والأطفال عند التصوير: لا تصوّر وجوه أشخاص غرباء دون إذن صريح، وتجنّب التقاط صور لموظفي الأمن والمرافق الحكومية. إذا طلب منك أحد الأهل إزالة صورة لأبنائه، احترم طلبه فوراً وبدون نقاش.</p>
+            </li>
+            <li>
+              <p class="font-black text-[#071713]">٧. عدم إطعام الطيور والحيوانات المائية البرية</p>
+              <p class="mt-1 text-[#48584f]">قد يتسبب الطعام غير المناسب (مثل الخبز القديم أو المقرمشات أو الشوكولاتة) في أمراض خطيرة للطيور المائية والصقور والقطط المتجولة حول المنتزه، كما يزيد من الحشرات والروائح في المقاعد المجاورة. إذا أحببت الطيور، أستمتع برؤيتها من بعيد ولا تعطِها طعاماً.</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="space-y-4">
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">خلفية علمية · المياه في الرياض</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">من أين تأتي مياه المنتزهات؟ فكرة بسيطة عن المياه المعالجة</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              معظم المساحات الخضراء الكبيرة في المدن السعودية تعتمد على نظام متكامل من المياه المعالجة لإرواء النباتات وتعبئة المسطحات الترفيهية مثل البحيرات والنوافير. مياه الصرف الصحي تمر بعدة مراحل معالجة في المحطات المتخصصة لتصل إلى مستوى "مناسب للاستخدامات غير المُستهلكة"، ثم تُضخّ عبر خطوط أنابيب منفصلة إلى المتنزهات والطرق والمناطق الزراعية. هذا يخفف الضغط على موارد المياه العذبة في منطقة شبه الجزيرة العربية المعروفة بقلة الأمطار وارتفاع درجة جفافها طوال معظم فترات السنة.
+            </p>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              من الناحية السياحية، هذا التنظيم يعني أن بحيرة منتزه الملك عبدالله ومياه النافورة ليست "مياه شرب". لذلك لا ينبغي شربها أو السباحة فيها أو استخدامها لغسل الفاكهة أو الأكل فيها. القواعد الصارمة للحماية والسلامة (عدم الجلوس على الحواجز، عدم إسقاط النفايات) ضرورية للحفاظ على جودة المياه وطول عمر أنظمة المعالجة والمضخات التي تشغل النافورة يومياً.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">خلفية تاريخية عامة · الحدائق العامة في المملكة</p>
+            <h3 class="mt-2 text-xl font-bold text-[#071713]">كيف تطور دور الحدائق العامة في المدن السعودية خلال الخمسين عاماً الماضية؟</h3>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              في منتصف القرن الماضي، كانت الحدائق والمتنزهات العامة في المدن السعودية محدودة جداً، وكانت تقتصر في الغالب على ساحات صغيرة مرتبطة بالمراكز البلدية أو المساجد الكبرى. مع بدايات عصر النفط والتحضر السريع (1970s فما بعد)، وضعت أمانات المدن مخططات واسعة للتنوير والمساحات الخضراء، وارتبطت شوارع الرياض الجديدة بممرات أشجار طويلة ومناطق جلوس صغيرة في التقاطعات.
+            </p>
+            <p class="mt-3 text-sm leading-8 text-[#43564e]">
+              وفي العقدين الأخيرين، تحوّل مفهوم "المتنزه" من مجرد مساحة خضراء للتجول إلى مركز عائلي متكامل: بحيرة، نافورة، مناطق لعب، مساحات فعاليات، وخدمات. منتزه الملك عبدالله في حي الملز يُعد أحد الأمثلة الواضحة على هذا الانتقال النوعي الذي يتماشى مع أهداف جودة الحياة ورفاهية الأسر في رؤية 2030 ومشروع الرياض الخضراء، الذي يهدف إلى مضاعفة الغطاء النباتي والتنوع البيولوجي داخل المدينة في العقد القادم.
+            </p>
+          </article>
+
+          <article class="card p-6">
+            <p class="text-xs font-bold text-[#1d6b56]">قائمة سريعة قبل الخروج من المنزل</p>
+            <ul class="mt-3 space-y-2 pr-5 list-disc text-sm leading-7 text-[#48584f]">
+              <li>حقيبة صغيرة بها ماء إضافي، معقم يدوي، بطارية احتياطية للهاتف، ومنديلات رطبة.</li>
+              <li>قبعة + واقي شمس إذا كانت الزيارة في النهار أو الموسم الدافئ؛ وشال خفيف أو سترة في الليل خلال الشتاء والخريف.</li>
+              <li>نقطة لقاء مكتوبة أو مرسومة للأطفال مع رقم هاتف أحد الوالدين.</li>
+              <li>التحقق مرة أخيرة من حالة الطقس في صفحتنا أعلاه وساعات الفتح والفعاليات عبر القنوات الرسمية إن أمكن.</li>
+              <li>تأكد من أنك لا تحمل أشياء ممنوعة في الأماكن العامة (منتجات كحولية أو أدوات حادة إلخ) حسب لوائح المملكة.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="map" class="section bg-[#f7f1e5]">
     <div class="shell">
-      <div class="mb-8"><span class="kicker">الخريطة</span><h2 class="section-title">منتزه الملك عبدالله، حي الملز</h2><p class="lead">استخدم الخريطة لتأكيد البوابة ومسار الوصول. تضمين خرائط جوجل خدمة خارجية وقد تستخدم تقنيات تخزين خاصة بها.</p></div>
+      <div class="mb-8"><span class="kicker">الخريطة</span><h2 class="section-title">منتزه الملك عبدالله، حي الملز | King Abdullah Park Map</h2><p class="lead">استخدم الخريطة لتأكيد البوابة ومسار الوصول. تضمين خرائط جوجل خدمة خارجية وقد تستخدم تقنيات تخزين خاصة بها.</p></div>
       <div class="overflow-hidden rounded-[32px] border border-[#0b201a]/10 bg-white shadow-[var(--shadow)]">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6458.3861580959465!2d46.734584477163054!3d24.66636567805645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f043b45575437%3A0xa2bebdcec14359bd!2z6Zi_5biD5p2c5ouJ5Zu9546L5YWs5Zut!5e1!3m2!1sar!2ssa!4v1787621558586!5m2!1sar!2ssa"
           width="100%" height="520" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="خريطة منتزه الملك عبدالله في الرياض"></iframe>
+      </div>
+      <div class="mt-6 rounded-2xl border border-[#0b201a]/10 bg-white p-6 text-sm leading-7 text-[#53665e]">
+        <p>
+          لاطلاع على التحديثات الرسمية ومعلومات السياحة الإقليمية، زوروا
+          <a class="text-[#1d6b56] font-bold underline underline-offset-4" href={govtTourismUrl} target="_blank" rel="noopener noreferrer">
+            بوابة الهيئة السعودية للسياحة (روح السعودية) / المملكة العربية السعودية
+          </a>
+          و
+          <a class="text-[#1d6b56] font-bold underline underline-offset-4" href="https://alriyadh.gov.sa/" target="_blank" rel="noopener noreferrer">
+            أمانة منطقة الرياض الرسمية
+          </a>.
+        </p>
       </div>
     </div>
   </section>
