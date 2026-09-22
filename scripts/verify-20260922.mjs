@@ -35,7 +35,7 @@ function count(re, str) {
   return m ? m.length : 0;
 }
 
-console.log('\n=== KAP 20260922 静态 AC 验证 v2 开始 ===\n');
+console.log('\n=== KAP 20260922 静态 AC 验证 v3 开始 ===\n');
 
 // ============ 读入所有待测文件 ============
 const indexAstro = read('src/pages/index.astro');
@@ -52,16 +52,27 @@ const baseLayout = read('src/layouts/BaseLayout.astro');
 const gitignore = read('.gitignore');
 const cfignore = read('.cfignore');
 const manifestRaw = read('public/manifest.webmanifest');
+const faqAstro = read('src/pages/faq/index.astro');
+const visitAstro = read('src/pages/visit/index.astro');
+const privacyAstro = read('src/pages/privacy/index.astro');
+const termsAstro = read('src/pages/terms/index.astro');
+const cookiesAstro = read('src/pages/cookies/index.astro');
+const notFoundAstro = read('src/pages/404.astro');
 
-// ============ AC (a) Title 精确匹配 ============
-check('(a) title 精确等于「منتزه الملك عبدالله بالرياض - دليل سياحي شامل」', () => {
-  // 两重证据：
-  // 1) 模板层 <BaseLayout title="..." 的传入值（这是用户页面真正看到的）
+// ============ AC (a) Title + Description 高意图钩子 ============
+check('(a) 首页 Title 含 المواعيد/الأنشطة/نافورة الموسيقى，Description 埋 Opening/Ticket/Fountain/Parking 5 钩子', () => {
   const propTitle = templateLayer.match(/<BaseLayout[\s\S]*?\btitle=["']([^"']+)["']/);
   assert(propTitle, '未找到 <BaseLayout title=...> prop 传入');
-  const expected = 'منتزه الملك عبدالله بالرياض - دليل سياحي شامل';
-  assert(propTitle[1] === expected, `BaseLayout title 期望 "${expected}"，实际 "${propTitle[1]}"`);
-  // 2) BaseLayout 内确实有 <title>{title}</title> 渲染（确保 prop 会真实进入 DOM）
+  const titleHooks = ['المواعيد', 'الأنشطة', 'نافورة الموسيقى', 'دليل سياحي شامل'];
+  for (const h of titleHooks) {
+    assert(propTitle[1].includes(h), `首页 Title 缺高意图钩子: ${h}；实际: ${propTitle[1]}`);
+  }
+  const propDesc = templateLayer.match(/<BaseLayout[\s\S]*?\bdescription=["']([^"']+)["']/);
+  assert(propDesc, '未找到 <BaseLayout description=...> prop 传入');
+  const descHooks = ['Opening Hours', 'Ticket Price', 'Dancing Fountain', 'مواقف السيارات', 'الأسئلة الشائعة'];
+  for (const h of descHooks) {
+    assert(propDesc[1].includes(h), `首页 Description 缺高意图钩子: ${h}；实际: ${propDesc[1]}`);
+  }
   assert(/<title>\{title\}<\/title>/.test(baseLayout),
     'BaseLayout 内找不到 <title>{title}</title>，title prop 可能不生效');
 });
@@ -196,6 +207,73 @@ check('(j) 5 路线关键词（亲子/摄影/低体力/3h/6h）各 ≥1 次', ()
     if (n < 1) miss.push(`${label} (regex: ${re})`);
   }
   assert(miss.length === 0, `5 路线缺关键词: ${miss.join(' ; ')}`);
+});
+
+// ============ AC (k) 独立 FAQ 页存在 + 首屏 Ticket Price + FAQPage JSON-LD ============
+check('(k) /faq 独立 FAQ 页：首屏含 Ticket Price (Q) + FAQPage JSON-LD + 四大锚点 + 11 Q&A', () => {
+  // 证据1：frontmatter 数组声明里第一条的 id 确实是 ticket-price（锚点首屏）
+  const tpIdMatch = faqAstro.match(/id:\s*['"]ticket-price['"]\s*,/);
+  assert(tpIdMatch, '/faq 首屏锚点缺 ticket-price；FAQ 数组声明需首条为 ticket-price');
+  // 证据2：模板确实使用 id={item.id} 或等价形式渲染锚点
+  assert(/id=\{item\.id\}/.test(faqAstro) || /id=["']ticket-price["']/.test(faqAstro),
+    '/faq 模板未将 faq 数组 item.id 映射为 article id');
+  assert(faqAstro.includes('Ticket Price'), '/faq 首屏 Q 未包含英文 Ticket Price 高意图词');
+  assert(faqAstro.includes("'@type': 'FAQPage'") || faqAstro.includes('"@type": "FAQPage"'),
+    '/faq 缺 FAQPage JSON-LD 声明');
+  const anchors = ['التذاكر', 'المواعيد', 'الموقع', 'المرافق'];
+  for (const a of anchors) {
+    assert(faqAstro.includes(a), `/faq 顶部四大锚点缺: ${a}`);
+  }
+  // FAQ 卡片数：直接数 article class=card...，容忍单空格 class
+  const faqCount = count(/<article\b[^>]*\bclass=["'][^"']*\bcard\b[^"']*scroll-mt-28[^"']*["']/g, faqAstro);
+  // 或：frontmatter faq 数组里 { q: ... 的数量
+  const frontFaq = faqAstro.match(/^---\r?\n([\s\S]*?)\r?\n---/m);
+  let declared = 0;
+  if (frontFaq) declared = count(/q:\s*['"`]/g, frontFaq[1]);
+  const total = Math.max(faqCount, declared);
+  assert(total >= 11, `/faq 声明/渲染 FAQ 数 = ${total}（卡片 ${faqCount}，frontmatter 声明 ${declared}），期望 ≥11`);
+});
+
+// ============ AC (l) 独立 Visit 页存在 + 6 板块 + openingHoursSpecification Schema ============
+check('(l) /visit 独立 Visit 页：6 大板块齐全 + OpeningHoursSpecification Schema + 含 Ticket 钩子', () => {
+  const sections = ['hours', 'tickets', 'location', 'parking', 'transit', 'fountain'];
+  for (const s of sections) {
+    assert(new RegExp(`id=["']${s}["']`).test(visitAstro), `/visit 缺板块 id=${s}`);
+  }
+  assert(visitAstro.includes('OpeningHoursSpecification'),
+    '/visit JSON-LD 缺 OpeningHoursSpecification（营业时间结构化）');
+  assert(visitAstro.includes('priceRange'), '/visit JSON-LD 缺 priceRange（承接 Ticket 意图）');
+  assert(visitAstro.includes('Ticket Price'), '/visit 未埋英文 Ticket Price 高意图词');
+  assert(visitAstro.includes('الجمعة') && visitAstro.includes('رمضان'),
+    '/visit 未提及 الجمعة/رمضان 的特殊营业时间变更');
+  // iframe 检测：容忍 Astro 插值 src={mapEmbed} 或静态 src="https://...maps...embed"
+  const iframeMatch = visitAstro.match(/<iframe\b([\s\S]*?)>/);
+  assert(iframeMatch, '/visit 未找到 <iframe> 元素（需要嵌入 Google Maps）');
+  const attrs = iframeMatch[1];
+  const hasGoogleMap = /src=["']https:\/\/www\.google\.com\/maps\/embed/.test(attrs) ||
+                       /src=\{mapEmbed\}/.test(attrs) ||
+                       /google\.com\/maps\/embed/.test(visitAstro);
+  assert(hasGoogleMap, '/visit iframe 的 src 未指向 Google Maps embed（可使用 mapEmbed 常量插值）');
+  const hasTitle = /title=/.test(attrs);
+  assert(hasTitle, '/visit iframe 未提供可访问的 title 属性（屏幕阅读器所需）');
+});
+
+// ============ AC (m) 4 子页面 description 同步追加 مواعيد/أسعار/التذاكر/نافورة/مواقف 钩子 ============
+check('(m) 子页面（privacy/terms/cookies/404）description 均追加 ≥3 个高意图钩子', () => {
+  const hookList = ['مواعيد', 'أسعار', 'التذاكر', 'نافورة الموسيقى', 'مواقف'];
+  const subPages = [
+    { name: 'privacy', src: privacyAstro },
+    { name: 'terms', src: termsAstro },
+    { name: 'cookies', src: cookiesAstro },
+    { name: '404', src: notFoundAstro },
+  ];
+  for (const sp of subPages) {
+    const m = sp.src.match(/<BaseLayout[\s\S]*?\bdescription=["']([^"']+)["']/);
+    assert(m, `${sp.name} 未找到 description prop`);
+    const desc = m[1];
+    const matched = hookList.filter(h => desc.includes(h));
+    assert(matched.length >= 3, `${sp.name} description 只命中 ${matched.length} 个钩子 (${matched.join(',')})，期望 ≥3`);
+  }
 });
 
 // ============ 最终汇总 ============
