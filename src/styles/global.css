@@ -24,7 +24,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 ::selection { background: #b6e2d3; color: #071713; }
-a { color: inherit; }
+@layer base { a { color: inherit; } }
 img { display: block; max-width: 100%; }
 button, input { font: inherit; }
 
