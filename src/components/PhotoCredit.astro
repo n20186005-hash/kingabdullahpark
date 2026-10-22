@@ -1,0 +1,8 @@
+---
+interface Props { image:'lake'|'entrance'; }
+const { image }=Astro.props;
+const lake=image==='lake';
+const file=lake?'King_Abdullah_Park_Riyadh_lake.jpg':'King_Abdullah_Park_Riyadh_entrance.jpg';
+---
+<p class="photo-credit"><a href={`https://commons.wikimedia.org/wiki/File:${file}`}>Derivator2017 · Wikimedia Commons · {lake?'2022-05-13':'2023-05-12'}</a> · <a href={lake?'https://creativecommons.org/publicdomain/zero/1.0/':'https://creativecommons.org/licenses/by-sa/4.0/'}>{lake?'CC0 1.0':'CC BY-SA 4.0'}</a>. عُدّل الحجم والضغط، مع قص بصري متجاوب؛ {lake?'الصورة مرجعية مؤرخة.':'النسخة المعدلة بالترخيص نفسه.'}</p>
+<style>.photo-credit{font-size:.75rem;line-height:1.9;overflow-wrap:anywhere;padding:.8rem 0}.photo-credit a{text-decoration:underline;text-underline-offset:3px}</style>

@@ -51,3 +51,6 @@ button, input { font: inherit; }
   .section { padding: 64px 0; }
   .shell { width: min(100% - 24px, 1180px); }
 }
+
+/* Styles for the existing forecast rendered by its same-origin client. */
+.weather-days{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}.weather-day{border:1px solid var(--line);border-radius:1rem;padding:1rem;background:white;min-width:0}.weather-value{font-weight:700}.weather-label{color:#61716a}

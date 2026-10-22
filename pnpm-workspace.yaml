@@ -1,0 +1,4 @@
+# Native build tools already required by Astro/Vite and Wrangler.
+allowBuilds:
+  esbuild: true
+  workerd: true

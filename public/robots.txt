@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://kingabdullahpark.com/sitemap-index.xml

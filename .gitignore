@@ -25,3 +25,6 @@ download
 .idea/
 *.swp
 *.swo
+
+# Internal planning and private source diagnostics
+.trae/
