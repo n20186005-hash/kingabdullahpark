@@ -15,7 +15,7 @@
   function clearDeny(){
     // Verify a tab-local refusal can be cleared before publishing a shared grant.
     sessionStorage.removeItem(DENY);
-    if(sessionStorage.getItem(DENY)==='1')throw Error('Session refusal remains');
+    if(sessionStorage.getItem(DENY)!==null)throw Error('Session refusal remains');
     window.name=window.name.split(MARK).join('');
     if(window.name.includes(MARK))throw Error('Tab refusal remains');
   }
@@ -39,18 +39,26 @@
     const script=document.createElement('script');script.id='kap-ga4';script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+ID;document.head.appendChild(script);
     window.gtag('js',new Date());window.gtag('config',ID,{allow_google_signals:false,allow_ad_personalization_signals:false});
   }
+  function rollbackGrant(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({necessary:true,analytics:false,preferences:false,marketing:false}));
+      if(JSON.parse(localStorage.getItem(KEY)||'null')?.analytics===false)return true;
+    }catch{}
+    try{localStorage.removeItem(KEY);return localStorage.getItem(KEY)===null;}catch{return false;}
+  }
   function save(analytics){
     analytics=analytics===true;
     if(!analytics){retainedDenial=markDeny();apply(false);}
     try{
       if(analytics){clearDeny();localStorage.getItem(KEY);localStorage.setItem(KEY+'-write-check','1');localStorage.removeItem(KEY+'-write-check');}
       localStorage.setItem(KEY,JSON.stringify({necessary:true,analytics,preferences:false,marketing:false}));
+      if(!analytics&&JSON.parse(localStorage.getItem(KEY)||'null')?.analytics!==false)throw Error('Refusal could not be confirmed');
       if(analytics)window.__kapDenied=false;
       if(analytics&&read()?.analytics!==true)throw Error('Grant could not be confirmed');
       apply(analytics);return true;
     }catch{
       // A failed grant must not leave a shared allow value for a healthy second tab.
-      try{localStorage.setItem(KEY,JSON.stringify({necessary:true,analytics:false,preferences:false,marketing:false}));}catch{}
+      rollbackGrant();
       retainedDenial=markDeny();apply(false);return false;
     }
   }
@@ -63,8 +71,8 @@
     const stored=save(value);if(checkbox)checkbox.checked=active;
     if(status)status.textContent=stored
       ?'حُفظ الاختيار. '+stateText()+(value&&!active?' تعذر تأكيد التخزين.':'')
-      :retainedDenial?'Google Analytics متوقف في هذه التبويبة، ويستمر الرفض عند التنقل أو إعادة التحميل فيها. تعذر حفظ اختيار دائم؛ قد تبقى موافقة قديمة في تبويبات أخرى. لحذفها، امسح بيانات الموقع من إعدادات المتصفح.'
-      :'Google Analytics متوقف في هذه الصفحة. تعذر حفظ الاختيار؛ امسح بيانات الموقع قبل التنقل أو إعادة التحميل.';
+      :retainedDenial?'Google Analytics متوقف في هذه التبويبة، ويستمر الرفض عند التنقل أو إعادة التحميل ما دامت علامة الجلسة أو النافذة متاحة. تعذر حفظ اختيار دائم؛ قد تبقى الموافقة المخزنة متاحة في علامات تبويب أخرى. لإزالتها، امسح بيانات الموقع من إعدادات المتصفح.'
+      :'Google Analytics متوقف في هذه الصفحة. تعذر حفظ الاختيار؛ قد تبقى الموافقة المخزنة متاحة في علامات تبويب أخرى. امسح بيانات الموقع قبل التنقل أو إعادة التحميل.';
   }
   checkbox?.addEventListener('change',()=>{if(status)status.textContent='';});
   document.getElementById('consent-form')?.addEventListener('submit',event=>{event.preventDefault();choose(checkbox?.checked===true);});
