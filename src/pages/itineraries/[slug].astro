@@ -1,0 +1,21 @@
+---
+import TopicPage from '../../components/TopicPage.astro';
+import { TOPICS, getTopicByPath } from '../../data/topics';
+
+export function getStaticPaths() {
+  return TOPICS.filter((t) => t.path.startsWith('/itineraries/')).map((t) => ({
+    params: { slug: t.slug },
+    props: { topic: t },
+  }));
+}
+
+const { topic } = Astro.props;
+
+if (!topic) {
+  const slug = Astro.params.slug as string;
+  const found = getTopicByPath('/itineraries/' + slug + '/');
+  if (!found) return Astro.redirect('/404');
+}
+---
+
+<TopicPage topic={topic} />

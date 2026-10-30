@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TOPIC_GROUPS, getTopicByPath, type Topic } from '../data/topics';
+import { mapsURL } from '../data/park';
+
+interface Props {
+  topic: Topic;
+}
+
+const { topic } = Astro.props;
+const groupInfo = TOPIC_GROUPS[topic.group];
+
+const relatedTopics = topic.related
+  .map((p) => getTopicByPath(p))
+  .filter((t): t is Topic => Boolean(t));
+
+// التنقل المزدوج: الرئيسية > اسم المجموعة > عنوان الصفحة
+const breadcrumb = {
+  '@type': 'BreadcrumbList',
+  '@language': 'ar-SA',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'الرئيسية',
+      item: new URL('/', Astro.site).href,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: groupInfo.label,
+      item: new URL('/', Astro.site).href + '#topics',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: topic.title,
+      item: new URL(topic.path, Astro.site).href,
+    },
+  ],
+};
+
+const faqSchema: any = {
+  '@type': 'FAQPage',
+  '@language': 'ar-SA',
+  mainEntity: topic.faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const webPageSchema = {
+  '@type': 'WebPage',
+  '@language': 'ar-SA',
+  '@id': new URL(topic.path, Astro.site).href + '#webpage',
+  url: new URL(topic.path, Astro.site).href,
+  name: topic.title,
+  description: topic.metaDescription,
+  inLanguage: 'ar-SA',
+  isPartOf: { '@type': 'WebSite', '@id': new URL('/', Astro.site).href + '#website' },
+  about: { '@type': 'TouristAttraction', '@id': new URL('/', Astro.site).href + '#attraction' },
+  breadcrumb,
+};
+
+const jsonLd = [webPageSchema, breadcrumb, faqSchema];
+---
+
+<BaseLayout
+  title={topic.metaTitle}
+  description={topic.metaDescription}
+  path={topic.path}
+  jsonLd={jsonLd}
+>
+  <main class="container" dir="rtl">
+    <nav class="breadcrumb" aria-label="مسار التنقل">
+      <a href="/">الرئيسية</a>
+      <span aria-hidden="true"> / </span>
+      <a href="/#topics">{groupInfo.label}</a>
+      <span aria-hidden="true"> / </span>
+      <span>{topic.title}</span>
+    </nav>
+
+    <article class="topic">
+      <header class="topic-head">
+        <p class="topic-kicker">{groupInfo.label}</p>
+        <h1>{topic.title}</h1>
+        <p class="topic-lead">{topic.lead}</p>
+        <p class="topic-updated">آخر تحديث: {topic.updated}</p>
+      </header>
+
+      {
+        topic.sections.map((s) => (
+          <section id={s.id} class="topic-section">
+            <h2>{s.title}</h2>
+            {s.paragraphs?.map((p) => <p>{p}</p>)}
+            {s.bullets && (
+              <ul>
+                {s.bullets.map((b) => <li>{b}</li>)}
+              </ul>
+            )}
+            {s.callout && <p class="callout">{s.callout}</p>}
+          </section>
+        ))
+      }
+
+      {
+        topic.faqs.length > 0 && (
+          <section class="topic-section" id="faq">
+            <h2>أسئلة شائعة</h2>
+            <div class="faq">
+              {topic.faqs.map((f) => (
+                <details>
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        relatedTopics.length > 0 && (
+          <section class="topic-section" id="related">
+            <h2>مواضيع ذات صلة</h2>
+            <ul class="related-list">
+              {relatedTopics.map((r) => (
+                <li>
+                  <a href={r.path}>{r.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <section class="topic-section disclaimer">
+        <h2>إخلاء مسؤولية</h2>
+        <p>
+          هذا الدليل جهد مستقل غير رسمي وغير تابع لإدارة المنتزه. لا نمثل المنتزه ولا ندّعي
+          التشغيل. الأسعار والمواعيد والعروض الحالية يجب تأكيدها مباشرة مع الإدارة أو الجهات
+          الرسمية قبل الزيارة؛ المعلومات هنا للتخطيط ولا تُعد التزاماً.
+        </p>
+        <p>
+          موقع المنتزه على الخريطة يتصل بجوجل عند التحميل:
+          <a href={mapsURL} target="_blank" rel="noopener noreferrer">خريطة منتزه الملك عبدالله</a>.
+        </p>
+      </section>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin: 1rem 0;
+  }
+  .breadcrumb a {
+    color: var(--brand);
+    text-decoration: none;
+  }
+  .topic-head {
+    margin-bottom: 1.5rem;
+  }
+  .topic-kicker {
+    color: var(--brand);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .topic-lead {
+    font-size: 1.1rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .topic-updated {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  .topic-section {
+    margin: 2rem 0;
+  }
+  .topic-section h2 {
+    color: var(--brand);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .callout {
+    background: var(--surface);
+    border-inline-start: 4px solid var(--brand);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    color: var(--text);
+    margin-top: 0.8rem;
+  }
+  .faq details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.6rem;
+    background: var(--surface);
+  }
+  .faq summary {
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .faq p {
+    margin-top: 0.6rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .related-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .related-list a {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .disclaimer {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1.2rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .disclaimer a {
+    color: var(--brand);
+  }
+</style>
